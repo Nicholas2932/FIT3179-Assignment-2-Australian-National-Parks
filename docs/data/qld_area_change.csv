@@ -1,0 +1,11 @@
+category,short_label,tenure,start_year,start_ha,end_year,end_ha,change_ha,pct_change,baseline_note
+Nature refuge,Nature refuge,Non-tenured,2008,554891,2023/24,4936365,4381474,789.6,reported
+National park (Cape York Peninsula Aboriginal land),NP (Cape York Peninsula),Tenured,2009,193918,2023/24,2651261,2457343,1267.2,area not reported in 2008
+National park (Aboriginal land),NP (Aboriginal land),Tenured,2008,0,2023/24,79707,79707,,category new since 2008
+Special Wildlife Reserve,Special Wildlife Reserve,Non-tenured,2008,0,2023/24,56392,56392,,category new since 2008
+Conservation park / regional park (general),Conservation park,Tenured,2008,65967,2023/24,91495,25528,38.7,reported
+National park (scientific),NP (scientific),Tenured,2008,52221,2023/24,53192,971,1.9,reported
+Coordinated conservation area,Coordinated conservation area,Non-tenured,2008,2121,2023/24,2121,0,0.0,reported
+National park (recovery),NP (recovery),Tenured,2008,17687,2023/24,0,-17687,-100.0,reported
+Resources reserve / regional park (resource use area),Resources reserve,Tenured,2008,356644,2023/24,223686,-132958,-37.3,reported
+National park,National park,Tenured,2008,7530914,2023/24,6790163,-740751,-9.8,reported

@@ -1,0 +1,657 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "National park regions have a larger share of employing tourism businesses",
+    "subtitle": [
+      "Bars show each size band’s share of its group’s tourism businesses in June 2024.",
+      "Park-associated regions vs comparison regions; darker segments mark capital cities.",
+      " ",
+      "Source: TRA, Tourism Businesses in Australia 2025, state tables, June 2024."
+    ],
+    "anchor": "start",
+    "offset": 14
+  },
+  "data": {
+    "url": "data/np_business_size.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "is_capital": "number",
+        "band_order": "number",
+        "businesses": "number",
+        "share": "number",
+        "side_total": "number",
+        "side_regions": "number",
+        "part_regions": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "[\"National-park regions\",\"… of which capital cities (Canberra, Hobart)\",\"Comparison regions\",\"… of which capital cities (6)\"][(datum.side === 'park' ? 0 : 2) + datum.is_capital]",
+      "as": "segment"
+    },
+    {
+      "calculate": "datum.side === 'park' ? 'National park regions' : 'Comparison regions'",
+      "as": "side_label"
+    },
+    {
+      "calculate": "datum.part_regions <= 8 ? datum.region_names : datum.part_regions + ' regions'",
+      "as": "regions_text"
+    },
+    {
+      "calculate": "1 - datum.is_capital",
+      "as": "stack_order"
+    }
+  ],
+  "hconcat": [
+    {
+      "width": 310,
+      "height": 230,
+      "transform": [
+        {
+          "filter": "datum.side === 'park'"
+        }
+      ],
+      "encoding": {
+        "y": {
+          "field": "band",
+          "type": "nominal",
+          "sort": {
+            "field": "band_order",
+            "op": "min"
+          },
+          "scale": {
+            "type": "band",
+            "paddingInner": 0.28,
+            "paddingOuter": 0.14
+          },
+          "axis": null
+        }
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "bar",
+            "stroke": "white",
+            "strokeWidth": 1.5
+          },
+          "encoding": {
+            "x": {
+              "field": "share",
+              "type": "quantitative",
+              "stack": "zero",
+              "scale": {
+                "domain": [
+                  0,
+                  0.6
+                ],
+                "reverse": true
+              },
+              "axis": {
+                "title": "Share of the group’s businesses",
+                "titleColor": "#6b7780",
+                "titleFontSize": 11,
+                "titleFontWeight": 400,
+                "format": ".0%",
+                "values": [
+                  0,
+                  0.2,
+                  0.4,
+                  0.6
+                ],
+                "labelColor": "#6b7780",
+                "labelFontSize": 11,
+                "grid": true,
+                "gridColor": "#eceff1",
+                "domain": false,
+                "ticks": false
+              }
+            },
+            "order": {
+              "field": "stack_order",
+              "type": "quantitative"
+            },
+            "color": {
+              "field": "segment",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "National-park regions",
+                  "… of which capital cities (Canberra, Hobart)",
+                  "Comparison regions",
+                  "… of which capital cities (6)"
+                ],
+                "range": [
+                  "#3d9196",
+                  "#0a3d41",
+                  "#b0bec5",
+                  "#455a64"
+                ]
+              },
+              "legend": {
+                "title": "Regional group and capital city component",
+                "orient": "none",
+                "direction": "horizontal",
+                "columns": 2,
+                "columnPadding": 28,
+                "rowPadding": 6,
+                "titleOrient": "top",
+                "titleAnchor": "start",
+                "symbolType": "square",
+                "symbolSize": 150,
+                "legendX": 0,
+                "legendY": 288
+              }
+            },
+            "tooltip": [
+              {
+                "field": "side_label",
+                "title": "Group"
+              },
+              {
+                "field": "segment",
+                "title": "Part"
+              },
+              {
+                "field": "band",
+                "title": "Business size"
+              },
+              {
+                "field": "businesses",
+                "type": "quantitative",
+                "format": ",",
+                "title": "Businesses"
+              },
+              {
+                "field": "share",
+                "type": "quantitative",
+                "format": ".1%",
+                "title": "Share of the group"
+              },
+              {
+                "field": "regions_text",
+                "title": "Regions"
+              }
+            ]
+          }
+        },
+        {
+          "transform": [
+            {
+              "aggregate": [
+                {
+                  "op": "sum",
+                  "field": "share",
+                  "as": "band_share"
+                }
+              ],
+              "groupby": [
+                "band",
+                "band_order"
+              ]
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "right",
+            "dx": -6,
+            "baseline": "middle",
+            "fontSize": 11.5,
+            "fontWeight": 600,
+            "color": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "field": "band_share",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "band_share",
+              "type": "quantitative",
+              "format": ".1%"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "aggregate": [
+                {
+                  "op": "max",
+                  "field": "side_total",
+                  "as": "side_total"
+                },
+                {
+                  "op": "max",
+                  "field": "side_regions",
+                  "as": "side_regions"
+                }
+              ]
+            },
+            {
+              "calculate": "format(datum.side_total, ',') + ' tourism businesses' + ' · ' + datum.side_regions + ' regions'",
+              "as": "totals_text"
+            }
+          ],
+          "layer": [
+            {
+              "mark": {
+                "type": "text",
+                "align": "right",
+                "baseline": "bottom",
+                "fontSize": 13,
+                "fontWeight": 600,
+                "color": "#37474f"
+              },
+              "encoding": {
+                "x": {
+                  "value": 310
+                },
+                "y": {
+                  "value": -34
+                },
+                "text": {
+                  "value": "National park regions"
+                },
+                "tooltip": {
+                  "value": null
+                }
+              }
+            },
+            {
+              "mark": {
+                "type": "text",
+                "align": "right",
+                "baseline": "bottom",
+                "fontSize": 11.5,
+                "color": "#6b7780"
+              },
+              "encoding": {
+                "x": {
+                  "value": 310
+                },
+                "y": {
+                  "value": -16
+                },
+                "text": {
+                  "field": "totals_text"
+                },
+                "tooltip": {
+                  "value": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 150,
+      "height": 230,
+      "transform": [
+        {
+          "filter": "datum.side === 'park' && datum.is_capital === 1"
+        }
+      ],
+      "encoding": {
+        "y": {
+          "field": "band",
+          "type": "nominal",
+          "sort": {
+            "field": "band_order",
+            "op": "min"
+          },
+          "scale": {
+            "type": "band",
+            "paddingInner": 0.28,
+            "paddingOuter": 0.14
+          },
+          "axis": null
+        }
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "text",
+            "align": "center",
+            "baseline": "middle",
+            "fontSize": 12,
+            "color": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "value": 75
+            },
+            "text": {
+              "field": "band"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "aggregate": [
+                {
+                  "op": "count",
+                  "as": "n"
+                }
+              ]
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "center",
+            "baseline": "bottom",
+            "fontSize": 11,
+            "fontStyle": "italic",
+            "color": "#6b7780"
+          },
+          "encoding": {
+            "x": {
+              "value": 75
+            },
+            "y": {
+              "value": -16
+            },
+            "text": {
+              "value": "Business size"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "width": 310,
+      "height": 230,
+      "transform": [
+        {
+          "filter": "datum.side === 'comparison'"
+        }
+      ],
+      "encoding": {
+        "y": {
+          "field": "band",
+          "type": "nominal",
+          "sort": {
+            "field": "band_order",
+            "op": "min"
+          },
+          "scale": {
+            "type": "band",
+            "paddingInner": 0.28,
+            "paddingOuter": 0.14
+          },
+          "axis": null
+        }
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "bar",
+            "stroke": "white",
+            "strokeWidth": 1.5
+          },
+          "encoding": {
+            "x": {
+              "field": "share",
+              "type": "quantitative",
+              "stack": "zero",
+              "scale": {
+                "domain": [
+                  0,
+                  0.6
+                ],
+                "reverse": false
+              },
+              "axis": {
+                "title": "Share of the group’s businesses",
+                "titleColor": "#6b7780",
+                "titleFontSize": 11,
+                "titleFontWeight": 400,
+                "format": ".0%",
+                "values": [
+                  0,
+                  0.2,
+                  0.4,
+                  0.6
+                ],
+                "labelColor": "#6b7780",
+                "labelFontSize": 11,
+                "grid": true,
+                "gridColor": "#eceff1",
+                "domain": false,
+                "ticks": false
+              }
+            },
+            "order": {
+              "field": "stack_order",
+              "type": "quantitative"
+            },
+            "color": {
+              "field": "segment",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "National-park regions",
+                  "… of which capital cities (Canberra, Hobart)",
+                  "Comparison regions",
+                  "… of which capital cities (6)"
+                ],
+                "range": [
+                  "#3d9196",
+                  "#0a3d41",
+                  "#b0bec5",
+                  "#455a64"
+                ]
+              },
+              "legend": {
+                "title": "Regional group and capital city component",
+                "orient": "none",
+                "direction": "horizontal",
+                "columns": 2,
+                "columnPadding": 28,
+                "rowPadding": 6,
+                "titleOrient": "top",
+                "titleAnchor": "start",
+                "symbolType": "square",
+                "symbolSize": 150,
+                "legendX": 0,
+                "legendY": 288
+              }
+            },
+            "tooltip": [
+              {
+                "field": "side_label",
+                "title": "Group"
+              },
+              {
+                "field": "segment",
+                "title": "Part"
+              },
+              {
+                "field": "band",
+                "title": "Business size"
+              },
+              {
+                "field": "businesses",
+                "type": "quantitative",
+                "format": ",",
+                "title": "Businesses"
+              },
+              {
+                "field": "share",
+                "type": "quantitative",
+                "format": ".1%",
+                "title": "Share of the group"
+              },
+              {
+                "field": "regions_text",
+                "title": "Regions"
+              }
+            ]
+          }
+        },
+        {
+          "transform": [
+            {
+              "aggregate": [
+                {
+                  "op": "sum",
+                  "field": "share",
+                  "as": "band_share"
+                }
+              ],
+              "groupby": [
+                "band",
+                "band_order"
+              ]
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "dx": 6,
+            "baseline": "middle",
+            "fontSize": 11.5,
+            "fontWeight": 600,
+            "color": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "field": "band_share",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "band_share",
+              "type": "quantitative",
+              "format": ".1%"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "aggregate": [
+                {
+                  "op": "max",
+                  "field": "side_total",
+                  "as": "side_total"
+                },
+                {
+                  "op": "max",
+                  "field": "side_regions",
+                  "as": "side_regions"
+                }
+              ]
+            },
+            {
+              "calculate": "format(datum.side_total, ',') + ' tourism businesses' + ' · ' + datum.side_regions + ' regions'",
+              "as": "totals_text"
+            }
+          ],
+          "layer": [
+            {
+              "mark": {
+                "type": "text",
+                "align": "left",
+                "baseline": "bottom",
+                "fontSize": 13,
+                "fontWeight": 600,
+                "color": "#37474f"
+              },
+              "encoding": {
+                "x": {
+                  "value": 0
+                },
+                "y": {
+                  "value": -34
+                },
+                "text": {
+                  "value": "Comparison regions"
+                },
+                "tooltip": {
+                  "value": null
+                }
+              }
+            },
+            {
+              "mark": {
+                "type": "text",
+                "align": "left",
+                "baseline": "bottom",
+                "fontSize": 11.5,
+                "color": "#6b7780"
+              },
+              "encoding": {
+                "x": {
+                  "value": 0
+                },
+                "y": {
+                  "value": -16
+                },
+                "text": {
+                  "field": "totals_text"
+                },
+                "tooltip": {
+                  "value": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "spacing": 0,
+  "resolve": {
+    "scale": {
+      "color": "shared",
+      "x": "independent"
+    },
+    "legend": {
+      "color": "shared"
+    }
+  },
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "right": 12,
+    "bottom": 14
+  },
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "legend": {
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12,
+      "labelColor": "#37474f",
+      "titlePadding": 6,
+      "labelOffset": 5,
+      "titleLimit": 420,
+      "labelLimit": 300
+    }
+  }
+}

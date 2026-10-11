@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Australian National Parks</title>
+
+  <!-- Vega, Vega-Lite and Vega-Embed (pinned versions) -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.33.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.23.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.29.0"></script>
+
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0 auto; padding: 1rem; max-width: 1100px; }
+
+    /* "container" sizing in the specs means: fill this box.
+       The box needs BOTH a width and a height, or the map collapses.
+
+       Australia measures 1.043 times wider than tall in the projection all three maps use,
+       so the MAP part of a box wants:  height = width x 0.959.
+       The specs use autosize "fit", which lays the title out INSIDE the box, so the box
+       itself needs that map height PLUS room for the title block. aspect-ratio keeps the
+       whole thing proportional as the window narrows, which a fixed vh height cannot do.
+
+       These two ratios were measured, not guessed: at 1100px wide they are the shortest
+       boxes at which each map stops growing. A taller box is pure whitespace, because both
+       maps are limited by their WIDTH, not their height.
+         .map-box  1100 x 1105 -> Australia 1086 x 1042 px   (was 517 x 496)
+         #map2     1100 x 1025 -> Australia  986 x  946 px
+       Map 2 comes out ~9% smaller than map 1 because its ACT call-out label sits east of
+       the coast: "fit" shrinks the projection to keep that text inside the frame.
+       Re-measure both if you change the type scale: a bigger title eats into the map. */
+    /* Size to the VIEWPORT HEIGHT as well as the page width, so a whole map is visible without
+       scrolling. --map-ratio is box height / box width; the width is capped at what fits in
+       (100vh - 2rem of body padding) at that ratio, never more than the page column, and never
+       below 600px so the type and symbols stay legible on short windows. */
+    .map-box {
+      --map-ratio: 1.005;
+      width: min(100%, max(600px, calc((100vh - 2rem) / var(--map-ratio))));
+      aspect-ratio: 1 / var(--map-ratio);
+      margin: 0 auto 2.5rem;
+    }
+    #map2 { --map-ratio: 0.932; }
+
+    /* Each small multiple has its own container-sized Vega-Lite view.
+
+       Map 3's heading, subtitle and key are plain HTML, while maps 1 and 2 draw theirs inside
+       the chart. These sizes therefore have to be kept level with config.title and config.legend
+       in specs/map1-proportional-symbols.json by hand, or the three maps stop looking like one page.
+       Sizes are in px, not rem, so they match the chart text exactly whatever the root size. */
+    .map3-comparison { margin-bottom: 2rem; }
+    .map3-comparison h2 { margin: 0 0 .3rem; font-size: 18px; font-weight: 600; }   /* = title */
+    .map3-comparison > p { margin: 0 0 .9rem; font-size: 13px; color: #555; }       /* = subtitle */
+    /* Shared key for all four panels. A smaller bottom margin than top binds it to the
+       panels it explains rather than to the subtitle above it. */
+    .map3-legend { margin: 0 0 .75rem; font-size: 12px; }
+    /* <strong> is 700 by default; 600 matches the legend titles the charts draw. */
+    .map3-legend strong { font-weight: 600; }
+    /* No gap between the steps, so all seven bands — zero included — read as one ordered
+       ramp rather than as separate chips. inline-flex keeps the strip only as wide as its
+       swatches, instead of stretching across the full page. */
+    .map3-ramp { display: inline-flex; margin-top: .45rem; }
+    .map3-ramp-step { display: flex; flex-direction: column; align-items: center; }
+    .map3-ramp-swatch { display: block; width: 44px; height: 13px; }
+    .map3-ramp-label { margin-top: .2rem; font-size: 12px; }                        /* = legend label */
+
+    /* ---- Vis 4 and vis 5 ----------------------------------------------------
+       These two are sized differently from the three maps, on purpose.
+       A map has no minimum readable width: shrink it and it is still a map. A dumbbell row and
+       a bump-chart year do have one - squeeze them and the category labels collide, the years
+       overlap, and the chart stops being readable before it stops fitting. So both specs set a
+       fixed pixel width instead of "container", and on a narrow screen the wrapper scrolls
+       sideways rather than crushing the chart.
+       Neither needs an aspect-ratio for the same reason: each spec works out its own height
+       from its number of rows, so the <div> simply takes whatever height Vega gives it. */
+    .chart-block { margin-bottom: 2.5rem; }
+    .chart-scroll { overflow-x: auto; }
+
+    .map3-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+    .map3-panels section { min-width: 0; }
+    /* Panel headings sit a step below a map title: they name a category, not the whole map. */
+    .map3-panels h3 { margin: 0 0 .4rem; font-size: 14px; font-weight: 600; }
+    /* Same rule as the big maps: height = width x 0.959 is Australia's shape in this
+       projection, so the map fills the panel instead of leaving slack down both sides.
+       There is no title inside these specs, so no extra allowance is needed. */
+    .map3-panel-chart { width: 100%; aspect-ratio: 1 / 0.959; }
+    @media (max-width: 640px) {
+      .map3-panels { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="map1" class="map-box"></div>
+  <div id="map2" class="map-box"></div>
+  <div id="map3"></div>
+
+  <!-- ---- Vis 4: connected dot plot (change in area, 2008 -> 2023/24) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis4"></div></div>
+  </section>
+
+  <!-- ---- Vis 5: bump chart (rank by number of protected areas, 2008 -> 2024) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis5"></div></div>
+  </section>
+
+  <!-- ---- Vis 6: paired bar chart (overnight trips, 2023 vs 2024) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis6"></div></div>
+  </section>
+
+  <!-- ---- Vis 7: lollipop chart (spend per overnight trip, 2024) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis7"></div></div>
+  </section>
+
+  <!-- ---- Vis 8: line chart (monthly passengers, top five national-park routes) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis8"></div></div>
+  </section>
+
+  <!-- ---- Vis 9: heatmap (share of each gateway's 2024 domestic movements, by month) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis9"></div></div>
+  </section>
+
+  <!-- ---- Vis 10: butterfly chart (tourism businesses by employment size, June 2024) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis10"></div></div>
+  </section>
+
+  <!-- ---- Vis 11: sankey (interstate overnight trips, origin -> destination, 2024) ---- -->
+  <section class="chart-block">
+    <div class="chart-scroll"><div id="vis11"></div></div>
+  </section>
+
+  <script>
+    // Every chart is a Vega-Lite spec saved as a .json file in specs/; vegaEmbed fetches it by
+    // URL and draws it into the <div> with the matching id. The specs are fully self-contained:
+    // each one carries its own fonts, sizes and widths, so the charts do not depend on each
+    // other or on a load order. The csv/topojson each spec reads sits in data/, and every path
+    // below is relative to this page, so the whole docs/ folder can be moved or hosted as is.
+    const EMBED_OPTIONS = { actions: false };
+
+    vegaEmbed("#map1", "specs/map1-proportional-symbols.json", EMBED_OPTIONS);
+    vegaEmbed("#map2", "specs/map2-choropleth.json", EMBED_OPTIONS);
+
+    // Map 3 is four copies of one panel spec, one per governance category. Its heading, subtitle
+    // and shared colour key are plain HTML built from the spec file: the text sits in the file's
+    // "usermeta" block, and the key reads the colour scale of the first layer, so the swatches
+    // can never drift from the colours the panels draw.
+    async function embedMap3(selector, specUrl) {
+      const container = document.querySelector(selector);
+      if (!container) throw new Error(`Map 3 container not found: ${selector}`);
+      const getJson = async url => {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Could not load ${url}: ${response.status}`);
+        return response.json();
+      };
+      const { usermeta: meta, ...panelSpec } = await getJson(specUrl);
+      // Fetch once; all panels reuse these small datasets.
+      const [bins, boundaries] = await Promise.all([meta.binsUrl, meta.basemapUrl].map(getJson));
+      const { domain: bands, range: colours } = panelSpec.layer[0].encoding.color.scale;
+      container.replaceChildren();
+      container.classList.add("map3-comparison");
+      const title = document.createElement("h2");
+      title.textContent = meta.title;
+      const subtitle = document.createElement("p");
+      subtitle.textContent = meta.subtitle;
+      const source = document.createElement("p");
+      source.textContent = meta.source;
+      container.append(title, subtitle, source);
+
+      // Every band is one segment of a single continuous strip, zero included.
+      const legend = document.createElement("div");
+      legend.className = "map3-legend";
+      const legendTitle = document.createElement("strong");
+      legendTitle.textContent = meta.legendTitle;
+      legend.append(legendTitle);
+      const ramp = document.createElement("div");
+      ramp.className = "map3-ramp";
+      bands.forEach((band, i) => {
+        const step = document.createElement("div");
+        step.className = "map3-ramp-step";
+        const swatch = document.createElement("span");
+        swatch.className = "map3-ramp-swatch";
+        swatch.style.backgroundColor = colours[i];
+        swatch.setAttribute("aria-hidden", "true");
+        const label = document.createElement("span");
+        label.className = "map3-ramp-label";
+        label.textContent = band;
+        step.append(swatch, label);
+        ramp.append(step);
+      });
+      legend.append(ramp);
+      container.append(legend);
+
+      const grid = document.createElement("div");
+      grid.className = "map3-panels";
+      container.append(grid);
+      // Derive panels from all observed source codes; nothing is grouped into "other".
+      // meta.panelOrder puts the highest counts first, so the two panels that carry the finding
+      // land at the top of the grid; any code not listed there follows after.
+      const codes = bins.metadata.governance_codes;
+      const orderedCodes = [...meta.panelOrder.filter(code => codes.includes(code)),
+        ...codes.filter(code => !meta.panelOrder.includes(code))];
+      const panels = orderedCodes.map(code => {
+        const governance = meta.governanceNames[code] || code;
+        const panel = document.createElement("section");
+        const heading = document.createElement("h3");
+        heading.textContent = governance;
+        const chart = document.createElement("div");
+        chart.className = "map3-panel-chart";
+        chart.setAttribute("aria-label", `${governance} protected-area location counts`);
+        panel.append(heading, chart);
+        grid.append(panel);
+        const cells = bins.features.map(feature => ({
+          ...feature, governance, count: feature.properties.governance_counts[code] || 0
+        }));
+        return { chart, cells };
+      });
+      return Promise.all(panels.map(({ chart, cells }) =>
+        vegaEmbed(chart, { ...panelSpec, datasets: { cells, boundaries } }, EMBED_OPTIONS)
+      ));
+    }
+
+    embedMap3("#map3", "specs/map3-bin.json").catch(error => {
+      console.error(error);
+      document.querySelector("#map3").textContent = "Map 3 could not load. Please refresh and check the data files.";
+    });
+
+    // Vis 4-11 are embedded the same way as the maps, through one small helper that adds an
+    // error message. Each chart loads a csv over the network, so it can fail in ways the maps
+    // can: a typo in the path, or opening index.html with file:// instead of through a local web
+    // server (the browser blocks the fetch). Catching it puts a readable message in the page
+    // instead of leaving a silent blank gap, and still logs the real error to the console.
+    // The third argument is the file that chart needs, so the message names the ONE file to
+    // check. vis 4 and vis 5 come from scripts/prepare_vis45.py; vis 6 and vis 7 from
+    // prepare_vis67.py; vis 8 and vis 9 from prepare_vis89.py.
+    function embedChart(selector, specUrl, dataFile) {
+      vegaEmbed(selector, specUrl, EMBED_OPTIONS).catch(error => {
+        console.error(selector, error);
+        document.querySelector(selector).textContent =
+          "This chart could not load. Run it from a local web server and check that " +
+          specUrl + " and " + dataFile + " exist.";
+      });
+    }
+
+    embedChart("#vis4", "specs/vis4-connecteddot.json", "data/qld_area_change.csv (run prepare_vis45.py)");
+    embedChart("#vis5", "specs/vis5-bump.json", "data/qld_rank_series.csv (run prepare_vis45.py)");
+    embedChart("#vis6", "specs/vis6-bar.json", "data/np_trips_pairs.csv (run prepare_vis67.py)");
+    embedChart("#vis7", "specs/vis7-lolipop.json", "data/np_exp_per_trip.csv (run prepare_vis67.py)");
+    embedChart("#vis8", "specs/vis8-line.json", "data/np_route_monthly.csv (run prepare_vis89.py)");
+    embedChart("#vis9", "specs/vis9-heatmap.json", "data/np_gateway_seasonality.csv (run prepare_vis89.py)");
+    embedChart("#vis10", "specs/vis10-butterfly.json", "data/np_business_size.csv (run prepare_vis10.py)");
+    embedChart("#vis11", "specs/vis11-sankey.json", "data/np_trip_flows_links.csv and _nodes.csv (run prepare_vis11.py)");
+  </script>
+</body>
+</html>

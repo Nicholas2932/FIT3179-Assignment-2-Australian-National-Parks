@@ -1,0 +1,130 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "usermeta": {
+    "title": "Government and private governance have the highest counts per cell",
+    "subtitle": "Distinct terrestrial protected areas per 200x200km cell, by governance category. All panels share one count scale. Grey means no recorded locations.",
+    "source": "Source: CAPAD 2024, terrestrial protected-area records.",
+    "legendTitle": "Distinct protected areas per cell",
+    "governanceNames": {
+      "C": "Community",
+      "J": "Joint",
+      "G": "Government",
+      "P": "Private",
+      "Unknown": "Unknown"
+    },
+    "basemapUrl": "data/Australia_topo.json",
+    "binsUrl": "data/capad2024_governance_bins.geojson",
+    "panelOrder": [
+      "G",
+      "P",
+      "J",
+      "C"
+    ]
+  },
+  "width": "container",
+  "height": "container",
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -132,
+      0
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "name": "cells"
+      },
+      "transform": [
+        {
+          "calculate": "datum.count === 0 ? '0' : datum.count < 2 ? '1' : datum.count < 4 ? '2–3' : datum.count < 8 ? '4–7' : datum.count < 16 ? '8–15' : datum.count < 64 ? '16–63' : '64+'",
+          "as": "count_band"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "#ffffff",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "color": {
+          "field": "count_band",
+          "type": "ordinal",
+          "scale": {
+            "domain": [
+              "0",
+              "1",
+              "2–3",
+              "4–7",
+              "8–15",
+              "16–63",
+              "64+"
+            ],
+            "range": [
+              "#eceff1",
+              "#fee0a3",
+              "#fdbb6b",
+              "#fd8d3c",
+              "#ef5f20",
+              "#cc3311",
+              "#8c2207"
+            ]
+          },
+          "legend": null
+        },
+        "tooltip": [
+          {
+            "field": "governance",
+            "title": "Governance"
+          },
+          {
+            "field": "count",
+            "type": "quantitative",
+            "title": "Distinct protected areas",
+            "format": ",.0f"
+          },
+          {
+            "field": "properties.distinct_areas",
+            "type": "quantitative",
+            "title": "All protected areas here",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "name": "boundaries",
+        "format": {
+          "type": "topojson",
+          "feature": "map"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.properties.name !== 'Macquarie Island' && datum.properties.name !== 'Norfolk Island'"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "fill": null,
+        "stroke": "#37474f",
+        "strokeWidth": 0.8
+      }
+    }
+  ],
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    }
+  }
+}

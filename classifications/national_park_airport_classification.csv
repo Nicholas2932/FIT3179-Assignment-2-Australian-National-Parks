@@ -1,0 +1,22 @@
+airport,iata_code,tourism_region,national_park_tourism,classification_note
+ADELAIDE,ADL,Adelaide,No,
+BALLINA,QNA,North Coast NSW,Yes,BITRE's own route names print QNA as Ballina.
+BRISBANE,BNE,Brisbane,No,
+CAIRNS,CNS,Tropical North Queensland,Yes,
+CANBERRA,CBR,Canberra,Yes,
+DARWIN,DRW,Darwin,No,City region; Kakadu and Litchfield are a separate region (verified csv).
+GOLD COAST,OOL,Gold Coast,Yes,
+HAMILTON ISLAND,HTI,Whitsundays,Yes,
+HOBART,HBA,Hobart and the South,Yes,
+KARRATHA,KTA,Australia's North West,Yes,"Pilbara, inside the Australia's North West region."
+LAUNCESTON,LST,Launceston and the North,Yes,
+MACKAY,MKY,Mackay,Yes,
+MELBOURNE,MEL,Melbourne,No,
+NEWCASTLE,NTL,Hunter,No,
+PERTH,PER,Destination Perth,No,
+PROSERPINE,PPP,Whitsundays,Yes,
+ROCKHAMPTON,ROK,Capricorn,Yes,
+SUNSHINE COAST,MCY,Sunshine Coast,Yes,
+SYDNEY,SYD,Sydney,No,
+TOWNSVILLE,TSV,Townsville,Yes,
+All Australian Airports,,Aggregate,Not applicable,Aggregate of all airports; not a destination.

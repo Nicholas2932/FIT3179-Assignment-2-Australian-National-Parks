@@ -1,0 +1,326 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "North Coast NSW led among national park regions in 2024, with trips up 10.8%",
+    "subtitle": [
+      "Domestic overnight trips in selected national park regions, years ending December 2023 and 2024.",
+      "Paired bars compare trip counts in 2023 and 2024, labels show % change.",
+      "Top 10 of 30 selected national-park regions, ranked by 2024 trips.",
+      " ",
+      "Source: Tourism Research Australia, National Visitor Survey, Table 10."
+    ],
+    "anchor": "start",
+    "offset": 14
+  },
+  "data": {
+    "url": "data/np_trips_pairs.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "trips_2023": "number",
+        "trips_2024": "number",
+        "change_trips": "number",
+        "pct_change": "number",
+        "nights_2024": "number",
+        "trips_rank_2024": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "datum.change_trips > 0 ? 'Increase' : datum.change_trips < 0 ? 'Decrease' : 'No change'",
+      "as": "direction"
+    },
+    {
+      "calculate": "max(datum.trips_2023, datum.trips_2024)",
+      "as": "row_max"
+    },
+    {
+      "calculate": "datum.pct_change === 0 ? 'no change' : format(datum.pct_change, '+.1f') + '%'",
+      "as": "change_text"
+    }
+  ],
+  "width": 520,
+  "height": 440,
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "right": 12,
+    "bottom": 14
+  },
+  "encoding": {
+    "y": {
+      "field": "short_label",
+      "type": "nominal",
+      "title": null,
+      "sort": {
+        "field": "trips_2024",
+        "op": "max",
+        "order": "descending"
+      },
+      "axis": {
+        "minExtent": 250,
+        "maxExtent": 250,
+        "labelLimit": 230,
+        "labelPadding": 12,
+        "labelFontSize": 12,
+        "labelColor": "#37474f",
+        "domain": false,
+        "ticks": false,
+        "grid": false
+      }
+    },
+    "tooltip": [
+      {
+        "field": "region",
+        "title": "Region"
+      },
+      {
+        "field": "trips_rank_2024",
+        "type": "quantitative",
+        "title": "Rank by 2024 trips"
+      },
+      {
+        "field": "trips_2023",
+        "type": "quantitative",
+        "format": ",.0f",
+        "title": "Trips 2023"
+      },
+      {
+        "field": "trips_2024",
+        "type": "quantitative",
+        "format": ",.0f",
+        "title": "Trips 2024"
+      },
+      {
+        "field": "change_trips",
+        "type": "quantitative",
+        "format": "+,.0f",
+        "title": "Change (trips)"
+      },
+      {
+        "field": "pct_change",
+        "type": "quantitative",
+        "format": "+.1f",
+        "title": "Change (%)"
+      },
+      {
+        "field": "nights_2024",
+        "type": "quantitative",
+        "format": ",.0f",
+        "title": "Visitor nights 2024"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "transform": [
+        {
+          "fold": [
+            "trips_2023",
+            "trips_2024"
+          ],
+          "as": [
+            "year_column",
+            "trips"
+          ]
+        },
+        {
+          "calculate": "datum.year_column === 'trips_2023' ? '2023' : '2024'",
+          "as": "year"
+        }
+      ],
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 2
+      },
+      "encoding": {
+        "x": {
+          "field": "trips",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              7000000
+            ]
+          },
+          "axis": {
+            "title": "",
+            "titleFontSize": 12,
+            "titleColor": "#6b7780",
+            "format": "~s",
+            "tickCount": 5,
+            "labelFontSize": 11,
+            "grid": true,
+            "gridColor": "#eceff1",
+            "domain": false,
+            "ticks": false
+          }
+        },
+        "yOffset": {
+          "field": "year",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "2023",
+              "2024"
+            ],
+            "paddingInner": 0.12,
+            "paddingOuter": 0.22
+          }
+        },
+        "color": {
+          "field": "year",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "2023",
+              "2024"
+            ],
+            "range": [
+              "#b2cfd1",
+              "#186e74"
+            ]
+          },
+          "legend": {
+            "orient": "none",
+            "direction": "horizontal",
+            "titleOrient": "top",
+            "titleAnchor": "start",
+            "legendX": -250,
+            "title": "Year",
+            "legendY": 492,
+            "symbolType": "square",
+            "symbolSize": 150
+          }
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 10,
+        "baseline": "middle",
+        "fontSize": 11.5,
+        "fontWeight": 600
+      },
+      "encoding": {
+        "x": {
+          "field": "row_max",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "change_text"
+        },
+        "color": {
+          "field": "direction",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Increase",
+              "No change",
+              "Decrease"
+            ],
+            "range": [
+              "#186e74",
+              "#90a4ae",
+              "#cc3311"
+            ]
+          },
+          "legend": {
+            "orient": "none",
+            "direction": "horizontal",
+            "titleOrient": "top",
+            "titleAnchor": "start",
+            "legendX": -250,
+            "title": "Direction of change in number of trips",
+            "legendY": 538,
+            "symbolType": "circle",
+            "symbolSize": 110
+          }
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "aggregate": [
+            {
+              "op": "max",
+              "field": "row_max",
+              "as": "anchor"
+            }
+          ]
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "bottom",
+        "fontSize": 11,
+        "fontStyle": "italic",
+        "color": "#6b7780",
+        "dx": -2
+      },
+      "encoding": {
+        "x": {
+          "field": "anchor",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              7000000
+            ]
+          }
+        },
+        "y": {
+          "value": -10
+        },
+        "text": {
+          "value": "Change 2023–2024 (%)"
+        },
+        "tooltip": {
+          "value": null
+        }
+      }
+    }
+  ],
+  "resolve": {
+    "scale": {
+      "color": "independent"
+    },
+    "legend": {
+      "color": "independent"
+    }
+  },
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "axisY": {
+      "minExtent": 250,
+      "maxExtent": 250
+    },
+    "axisX": {
+      "labelColor": "#6b7780"
+    },
+    "legend": {
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12,
+      "titlePadding": 6,
+      "labelOffset": 5,
+      "titleLimit": 420,
+      "labelLimit": 260
+    }
+  }
+}

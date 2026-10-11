@@ -1,0 +1,473 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Gold Coast to Sydney remains the busiest of the five national park region air routes",
+    "subtitle": [
+      "Monthly revenue passengers, both directions combined, from July 2014 to June 2026.",
+      "Top five routes by 2024 traffic; gap = unreleased data, zero = no flights.",
+      " ",
+      "Source: BITRE, TopRoutesJuly2014June2026_0.xlsx, 'Top Routes' sheet."
+    ],
+    "anchor": "start",
+    "offset": 14
+  },
+  "data": {
+    "url": "data/np_route_monthly.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "passengers": "number",
+        "rank_2024": "number",
+        "pax_2024": "number",
+        "month": "date:'%Y-%m-%d'"
+      }
+    }
+  },
+  "width": 714,
+  "height": 320,
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "right": 12,
+    "bottom": 14
+  },
+  "encoding": {
+    "x": {
+      "field": "month",
+      "type": "temporal",
+      "title": null,
+      "axis": {
+        "format": "%Y",
+        "tickCount": {
+          "interval": "year",
+          "step": 1
+        },
+        "labelColor": "#6b7780",
+        "labelFontSize": 11,
+        "grid": true,
+        "gridColor": "#eceff1",
+        "domain": false,
+        "ticks": false
+      }
+    }
+  },
+  "layer": [
+    {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "transform": [
+        {
+          "calculate": "datetime(2020, 3, 1)",
+          "as": "band_start"
+        },
+        {
+          "calculate": "datetime(2020, 11, 1)",
+          "as": "band_end"
+        }
+      ],
+      "layer": [
+        {
+          "mark": {
+            "type": "rect",
+            "color": "#eceff1"
+          },
+          "encoding": {
+            "x": {
+              "field": "band_start",
+              "type": "temporal"
+            },
+            "x2": {
+              "field": "band_end"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "top",
+            "dx": 4,
+            "dy": 4,
+            "fontSize": 11,
+            "fontStyle": "italic",
+            "color": "#6b7780"
+          },
+          "encoding": {
+            "x": {
+              "field": "band_start",
+              "type": "temporal"
+            },
+            "y": {
+              "value": 0
+            },
+            "text": {
+              "value": "COVID-19 Disruption"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "encoding": {
+        "y": {
+          "field": "passengers",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              300000
+            ]
+          },
+          "axis": {
+            "title": "Passengers per month (excluding staff/crew)",
+            "titleColor": "#6b7780",
+            "titleFontSize": 12,
+            "titleFontWeight": 400,
+            "titleAngle": 0,
+            "titleAlign": "left",
+            "titleBaseline": "bottom",
+            "titleX": -56,
+            "titleY": -12,
+            "format": "~s",
+            "tickCount": 6,
+            "labelColor": "#6b7780",
+            "labelFontSize": 11,
+            "grid": true,
+            "gridColor": "#eceff1",
+            "domain": false,
+            "ticks": false
+          }
+        },
+        "color": {
+          "field": "route_label",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Gold Coast – Sydney",
+              "Gold Coast – Melbourne",
+              "Hobart – Melbourne",
+              "Brisbane – Cairns",
+              "Canberra – Melbourne"
+            ],
+            "range": [
+              "#2a78d6",
+              "#eb6834",
+              "#4a3aa7",
+              "#008300",
+              "#e87ba4"
+            ]
+          },
+          "legend": {
+            "orient": "none",
+            "legendX": -56,
+            "legendY": 364,
+            "direction": "horizontal",
+            "columns": 3,
+            "columnPadding": 24,
+            "rowPadding": 6,
+            "titleOrient": "top",
+            "titleAnchor": "start",
+            "title": "Routes (click to focus)",
+            "symbolType": "stroke",
+            "symbolStrokeWidth": 3,
+            "symbolSize": 260
+          }
+        }
+      },
+      "layer": [
+        {
+          "params": [
+            {
+              "name": "routeFocus",
+              "select": {
+                "type": "point",
+                "fields": [
+                  "route_label"
+                ]
+              },
+              "bind": "legend"
+            }
+          ],
+          "mark": {
+            "type": "line",
+            "strokeWidth": 2,
+            "strokeJoin": "round",
+            "strokeCap": "round",
+            "invalid": "break-paths-filter-domains"
+          },
+          "encoding": {
+            "opacity": {
+              "condition": {
+                "test": "(!length(data('routeFocus_store')) && !length(data('lineFocus_store'))) || vlSelectionTest('routeFocus_store', datum) || vlSelectionTest('lineFocus_store', datum)",
+                "value": 1
+              },
+              "value": 0.15
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "window": [
+                {
+                  "op": "rank",
+                  "as": "from_end"
+                }
+              ],
+              "groupby": [
+                "route_label"
+              ],
+              "sort": [
+                {
+                  "field": "month",
+                  "order": "descending"
+                }
+              ]
+            },
+            {
+              "filter": "datum.from_end === 1"
+            },
+            {
+              "calculate": "({\"Brisbane – Cairns\":-6,\"Hobart – Melbourne\":6})[datum.route_label] || 0",
+              "as": "nudge"
+            },
+            {
+              "calculate": "datum.passengers - datum.nudge * 937.5",
+              "as": "label_y"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "middle",
+            "dx": 6,
+            "fontSize": 11.5,
+            "fontWeight": 600,
+            "color": "#37474f"
+          },
+          "encoding": {
+            "text": {
+              "field": "route_label"
+            },
+            "y": {
+              "field": "label_y",
+              "type": "quantitative"
+            },
+            "color": {
+              "value": "#37474f"
+            },
+            "opacity": {
+              "condition": {
+                "test": "(!length(data('routeFocus_store')) && !length(data('lineFocus_store'))) || vlSelectionTest('routeFocus_store', datum) || vlSelectionTest('lineFocus_store', datum)",
+                "value": 1
+              },
+              "value": 0.15
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "point",
+            "filled": true,
+            "size": 55,
+            "stroke": "white",
+            "strokeWidth": 1.5
+          },
+          "encoding": {
+            "opacity": {
+              "condition": {
+                "param": "monthHover",
+                "empty": false,
+                "value": 1
+              },
+              "value": 0
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "transform": [
+        {
+          "calculate": "!isValid(datum.passengers) ? 'not released' : datum.passengers === 0 ? '0 (no flights)' : format(datum.passengers, ',')",
+          "as": "passengers_text"
+        },
+        {
+          "pivot": "route_label",
+          "value": "passengers_text",
+          "groupby": [
+            "month"
+          ],
+          "op": "max"
+        }
+      ],
+      "params": [
+        {
+          "name": "monthHover",
+          "select": {
+            "type": "point",
+            "fields": [
+              "month"
+            ],
+            "nearest": true,
+            "on": "pointerover",
+            "clear": "pointerout"
+          }
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#37474f",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "opacity": {
+          "condition": {
+            "param": "monthHover",
+            "empty": false,
+            "value": 0.35
+          },
+          "value": 0
+        },
+        "tooltip": [
+          {
+            "field": "month",
+            "type": "temporal",
+            "format": "%B %Y",
+            "title": "Month"
+          },
+          {
+            "field": "Gold Coast – Sydney",
+            "type": "nominal",
+            "title": "Gold Coast – Sydney"
+          },
+          {
+            "field": "Gold Coast – Melbourne",
+            "type": "nominal",
+            "title": "Gold Coast – Melbourne"
+          },
+          {
+            "field": "Hobart – Melbourne",
+            "type": "nominal",
+            "title": "Hobart – Melbourne"
+          },
+          {
+            "field": "Brisbane – Cairns",
+            "type": "nominal",
+            "title": "Brisbane – Cairns"
+          },
+          {
+            "field": "Canberra – Melbourne",
+            "type": "nominal",
+            "title": "Canberra – Melbourne"
+          }
+        ]
+      }
+    },
+    {
+      "params": [
+        {
+          "name": "lineFocus",
+          "select": {
+            "type": "point",
+            "fields": [
+              "route_label"
+            ],
+            "on": "click"
+          }
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "color": "transparent",
+        "strokeWidth": 14,
+        "strokeJoin": "round",
+        "cursor": "pointer",
+        "invalid": "break-paths-filter-domains"
+      },
+      "encoding": {
+        "y": {
+          "field": "passengers",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              300000
+            ]
+          },
+          "axis": {
+            "title": "Passengers per month (excluding staff/crew)",
+            "titleColor": "#6b7780",
+            "titleFontSize": 12,
+            "titleFontWeight": 400,
+            "titleAngle": 0,
+            "titleAlign": "left",
+            "titleBaseline": "bottom",
+            "titleX": -56,
+            "titleY": -12,
+            "format": "~s",
+            "tickCount": 6,
+            "labelColor": "#6b7780",
+            "labelFontSize": 11,
+            "grid": true,
+            "gridColor": "#eceff1",
+            "domain": false,
+            "ticks": false
+          }
+        },
+        "detail": {
+          "field": "route_label",
+          "type": "nominal"
+        },
+        "tooltip": {
+          "value": null
+        }
+      }
+    }
+  ],
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "axisY": {
+      "minExtent": 56,
+      "maxExtent": 56
+    },
+    "legend": {
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12,
+      "titlePadding": 6,
+      "labelOffset": 5,
+      "labelColor": "#37474f",
+      "titleLimit": 420,
+      "labelLimit": 260
+    }
+  }
+}

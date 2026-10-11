@@ -1,0 +1,18 @@
+side,code,name,y_top,y_bottom,trips,np_origins,layout_height
+origin,NSW,New South Wales,0.0,11927.32,11927320,,45075.351
+origin,VIC,Victoria,12827.32,22667.4,9840080,,45075.351
+origin,QLD,Queensland,23567.4,31406.836,7839436,,45075.351
+origin,SA,South Australia,32306.836,34367.057,2060221,,45075.351
+origin,WA,Western Australia,35267.057,36810.585,1543528,,45075.351
+origin,TAS,Tasmania,37710.585,38500.596,790011,,45075.351
+origin,NT,Northern Territory,39400.596,39618.919,218323,,45075.351
+origin,ACT,Australian Capital Territory,40518.919,42863.315,2344396,,45075.351
+origin,NP,Not published or unallocated,43763.315,45075.351,1312036,,45075.351
+destination,NSW,New South Wales,0.0,11708.282,11708282,NT,45075.351
+destination,VIC,Victoria,12608.282,20626.687,8018405,NT,45075.351
+destination,QLD,Queensland,21526.687,29658.854,8132167,,45075.351
+destination,SA,South Australia,30558.854,33660.967,3102113,"TAS, ACT",45075.351
+destination,WA,Western Australia,34560.967,36219.702,1658735,"SA, TAS, NT, ACT",45075.351
+destination,TAS,Tasmania,37119.702,38601.322,1481620,"SA, WA, NT, ACT",45075.351
+destination,NT,Northern Territory,39501.322,40413.447,912125,"NSW, VIC, SA, WA, TAS, ACT",45075.351
+destination,ACT,Australian Capital Territory,41313.447,44175.351,2861904,"SA, WA, TAS, NT",45075.351

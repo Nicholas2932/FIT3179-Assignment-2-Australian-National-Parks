@@ -1,0 +1,241 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Only Gold Coast exceeded five of the six major cities in spending per trip",
+    "subtitle": [
+      "Average regional spend per domestic overnight trip, year ending December 2024.",
+      "The same ten national-park regions compared with six major cities.",
+      "Note: Regional spending only, and not total trip costs or spending inside parks.",
+      " ",
+      "Source: Tourism Research Australia, National Visitor Survey, Table 10."
+    ],
+    "anchor": "start",
+    "offset": 14
+  },
+  "data": {
+    "url": "data/np_exp_per_trip.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "exp_per_trip_2024": "number",
+        "exp_per_trip_2023": "number",
+        "trips_2024": "number",
+        "expenditure_m_2024": "number",
+        "nights_2024": "number",
+        "nights_per_trip_2024": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "format(datum.exp_per_trip_2024, '$,.0f')",
+      "as": "value_text"
+    }
+  ],
+  "width": 520,
+  "height": {
+    "step": 26
+  },
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "right": 12,
+    "bottom": 14
+  },
+  "encoding": {
+    "y": {
+      "field": "short_label",
+      "type": "nominal",
+      "title": null,
+      "sort": {
+        "field": "exp_per_trip_2024",
+        "op": "max",
+        "order": "descending"
+      },
+      "axis": {
+        "minExtent": 250,
+        "maxExtent": 250,
+        "labelLimit": 230,
+        "labelPadding": 12,
+        "labelFontSize": 12,
+        "labelColor": "#37474f",
+        "domain": false,
+        "ticks": false,
+        "grid": false
+      }
+    },
+    "x": {
+      "field": "exp_per_trip_2024",
+      "type": "quantitative",
+      "scale": {
+        "domain": [
+          0,
+          2400
+        ]
+      },
+      "axis": {
+        "title": "Average regional spend per overnight trip ($)",
+        "titleFontSize": 12,
+        "titleColor": "#6b7780",
+        "format": "$,.0f",
+        "tickCount": 4,
+        "labelFontSize": 11,
+        "grid": true,
+        "gridColor": "#eceff1",
+        "domain": false,
+        "ticks": false
+      }
+    },
+    "color": {
+      "field": "group",
+      "type": "nominal",
+      "scale": {
+        "domain": [
+          "National park regions",
+          "Capital cities"
+        ],
+        "range": [
+          "#186e74",
+          "#bf6b2e"
+        ]
+      },
+      "legend": {
+        "title": "Region group",
+        "orient": "none",
+        "direction": "horizontal",
+        "titleOrient": "top",
+        "titleAnchor": "start",
+        "legendX": -250,
+        "legendY": 468,
+        "symbolType": "circle",
+        "symbolSize": 140
+      }
+    },
+    "tooltip": [
+      {
+        "field": "region",
+        "title": "Region"
+      },
+      {
+        "field": "group",
+        "title": "Group"
+      },
+      {
+        "field": "exp_per_trip_2024",
+        "type": "quantitative",
+        "format": "$,.0f",
+        "title": "Spend per trip 2024"
+      },
+      {
+        "field": "exp_per_trip_2023",
+        "type": "quantitative",
+        "format": "$,.0f",
+        "title": "Spend per trip 2023"
+      },
+      {
+        "field": "nights_per_trip_2024",
+        "type": "quantitative",
+        "format": ".1f",
+        "title": "Nights per trip"
+      },
+      {
+        "field": "trips_2024",
+        "type": "quantitative",
+        "format": ",.0f",
+        "title": "Overnight trips"
+      },
+      {
+        "field": "expenditure_m_2024",
+        "type": "quantitative",
+        "format": "$,.1f",
+        "title": "Regional expenditure ($M)"
+      },
+      {
+        "field": "nights_2024",
+        "type": "quantitative",
+        "format": ",.0f",
+        "title": "Visitor nights"
+      }
+    ]
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rule",
+        "strokeCap": "round"
+      },
+      "encoding": {
+        "x2": {
+          "value": 0
+        },
+        "strokeWidth": {
+          "condition": {
+            "test": "datum.group === 'National park regions'",
+            "value": 3
+          },
+          "value": 2
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "opacity": 1
+      },
+      "encoding": {
+        "size": {
+          "condition": {
+            "test": "datum.group === 'National park regions'",
+            "value": 170
+          },
+          "value": 120
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 12,
+        "baseline": "middle",
+        "fontSize": 11,
+        "fontWeight": 600
+      },
+      "encoding": {
+        "text": {
+          "field": "value_text"
+        }
+      }
+    }
+  ],
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "axisY": {
+      "minExtent": 250,
+      "maxExtent": 250
+    },
+    "axisX": {
+      "labelColor": "#6b7780"
+    },
+    "legend": {
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12,
+      "titlePadding": 6,
+      "labelOffset": 5,
+      "titleLimit": 420,
+      "labelLimit": 260
+    }
+  }
+}

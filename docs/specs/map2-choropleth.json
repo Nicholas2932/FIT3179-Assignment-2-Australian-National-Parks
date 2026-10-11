@@ -1,0 +1,378 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": "container",
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "bottom": 5,
+    "right": 24
+  },
+  "title": {
+    "text": "Protected land varies across regions from 9.4% in Queensland to 55.9% in the ACT",
+    "subtitle": [
+      "Share of each mapped state or territory’s land designated as protected in 2024.",
+      "Marine areas excluded; Tasmania has the highest share among states, at 42.8%.",
+      " ",
+      "Source: CAPAD 2024 terrestrial tables, 'Jurisdiction' sheet."
+    ],
+    "anchor": "start"
+  },
+  "datasets": {
+    "shapes": [
+      {
+        "mapName": "Western Australia",
+        "code": "Western Australia",
+        "abbr": "WA",
+        "labelLon": 122,
+        "labelLat": -26
+      },
+      {
+        "mapName": "Northern Territory",
+        "code": "Northern Territory",
+        "abbr": "NT",
+        "labelLon": 133.4,
+        "labelLat": -20
+      },
+      {
+        "mapName": "South Australia",
+        "code": "South Australia",
+        "abbr": "SA",
+        "labelLon": 135.5,
+        "labelLat": -30
+      },
+      {
+        "mapName": "Queensland",
+        "code": "Queensland",
+        "abbr": "QLD",
+        "labelLon": 144.5,
+        "labelLat": -23
+      },
+      {
+        "mapName": "New South Wales",
+        "code": "New South Wales",
+        "abbr": "NSW",
+        "labelLon": 146.5,
+        "labelLat": -32.3
+      },
+      {
+        "mapName": "Victoria",
+        "code": "Victoria",
+        "abbr": "VIC",
+        "labelLon": 143.8,
+        "labelLat": -36.9
+      },
+      {
+        "mapName": "Tasmania",
+        "code": "Tasmania",
+        "abbr": "TAS",
+        "labelLon": 146.6,
+        "labelLat": -42.1
+      },
+      {
+        "mapName": "Macquarie Island",
+        "code": "Tasmania",
+        "abbr": "TAS"
+      },
+      {
+        "mapName": "Australian Capital Territory",
+        "code": "Australian Capital Territory",
+        "abbr": "ACT",
+        "labelLon": 155,
+        "labelLat": -35.9,
+        "anchorLon": 149,
+        "anchorLat": -35.5
+      }
+    ]
+  },
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -132,
+      0
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/Australia_topo.json",
+        "format": {
+          "type": "topojson",
+          "feature": "map"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.properties.name !== 'Macquarie Island' && datum.properties.name !== 'Norfolk Island' && datum.properties.name !== 'Jervis Bay Territory'"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "fill": "#e8ebed",
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      }
+    },
+    {
+      "data": {
+        "url": "data/Australia_topo.json",
+        "format": {
+          "type": "topojson",
+          "feature": "map"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.properties.name !== 'Macquarie Island' && datum.properties.name !== 'Norfolk Island' && datum.properties.name !== 'Jervis Bay Territory'"
+        },
+        {
+          "lookup": "properties.name",
+          "from": {
+            "data": {
+              "name": "shapes"
+            },
+            "key": "mapName",
+            "fields": [
+              "code"
+            ]
+          }
+        },
+        {
+          "lookup": "code",
+          "from": {
+            "data": {
+              "url": "data/capad2024_terrestrial_jurisdiction.csv",
+              "format": {
+                "type": "csv",
+                "parse": {
+                  "jurisdiction_area_ha": "number",
+                  "protected_area_ha": "number",
+                  "pct_protected": "number"
+                }
+              }
+            },
+            "key": "code",
+            "fields": [
+              "pct_protected",
+              "protected_area_ha",
+              "jurisdiction_area_ha"
+            ]
+          }
+        },
+        {
+          "filter": "isValid(datum.pct_protected)"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "color": {
+          "field": "pct_protected",
+          "type": "quantitative",
+          "scale": {
+            "scheme": "yellowgreenblue",
+            "domain": [
+              0,
+              100
+            ]
+          },
+          "legend": {
+            "title": "% of land protected",
+            "format": ".0f",
+            "values": [
+              0,
+              25,
+              50,
+              75,
+              100
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "code",
+            "title": "Jurisdiction"
+          },
+          {
+            "field": "pct_protected",
+            "title": "% protected",
+            "format": ".1f"
+          },
+          {
+            "field": "protected_area_ha",
+            "title": "Protected (ha)",
+            "format": ",.0f"
+          },
+          {
+            "field": "jurisdiction_area_ha",
+            "title": "Land area (ha)",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "name": "shapes"
+      },
+      "transform": [
+        {
+          "filter": "isValid(datum.labelLon)"
+        },
+        {
+          "lookup": "code",
+          "from": {
+            "data": {
+              "url": "data/capad2024_terrestrial_jurisdiction.csv",
+              "format": {
+                "type": "csv",
+                "parse": {
+                  "jurisdiction_area_ha": "number",
+                  "protected_area_ha": "number",
+                  "pct_protected": "number"
+                }
+              }
+            },
+            "key": "code",
+            "fields": [
+              "pct_protected"
+            ]
+          }
+        },
+        {
+          "calculate": "datum.abbr + ' ' + format(datum.pct_protected, '.1f') + '%'",
+          "as": "label"
+        }
+      ],
+      "layer": [
+        {
+          "transform": [
+            {
+              "filter": "isValid(datum.anchorLon)"
+            }
+          ],
+          "mark": {
+            "type": "rule",
+            "color": "#444",
+            "strokeWidth": 1.1
+          },
+          "encoding": {
+            "longitude": {
+              "field": "anchorLon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "anchorLat",
+              "type": "quantitative"
+            },
+            "longitude2": {
+              "field": "labelLon"
+            },
+            "latitude2": {
+              "field": "labelLat"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "!isValid(datum.anchorLon)"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 15,
+            "fontWeight": "bold",
+            "color": "#222",
+            "align": "center"
+          },
+          "encoding": {
+            "longitude": {
+              "field": "labelLon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "labelLat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "label"
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "isValid(datum.anchorLon)"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 15,
+            "fontWeight": "bold",
+            "color": "#222",
+            "align": "left",
+            "dx": 5
+          },
+          "encoding": {
+            "longitude": {
+              "field": "labelLon",
+              "type": "quantitative"
+            },
+            "latitude": {
+              "field": "labelLat",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "label"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "legend": {
+      "orient": "none",
+      "legendX": 4,
+      "legendY": {
+        "expr": "height * 0.78"
+      },
+      "direction": "horizontal",
+      "gradientLength": 240,
+      "gradientThickness": 14,
+      "titleAnchor": "start",
+      "titleLimit": 400,
+      "fillColor": "#ffffffd9",
+      "strokeColor": "#dddddd",
+      "cornerRadius": 3,
+      "padding": 8,
+      "offset": 4,
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12
+    }
+  }
+}

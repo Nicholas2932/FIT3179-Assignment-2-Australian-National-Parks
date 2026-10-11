@@ -1,0 +1,435 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Cairns peaks in July, while Queensland and Tasmania’s gateways peak in January",
+    "subtitle": [
+      "Each cell shows a month’s share of 2024 domestic and regional passenger movements.",
+      "Shares reveal seasonal timing across airports of different sizes; rows are north to south.",
+      " ",
+      "Source: BITRE, Aviation-Airport Traffic Data-May 2026.xlsx, 'Airport Passengers' sheet."
+    ],
+    "anchor": "start",
+    "offset": 14
+  },
+  "data": {
+    "url": "data/np_gateway_seasonality.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "latitude": "number",
+        "month_num": "number",
+        "days_in_month": "number",
+        "movements": "number",
+        "annual_movements": "number",
+        "share": "number",
+        "peak_month_num": "number",
+        "is_peak": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "monthFormat(datum.month_num - 1)",
+      "as": "month_name"
+    }
+  ],
+  "width": 520,
+  "height": 442,
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "right": 12,
+    "bottom": 14
+  },
+  "encoding": {
+    "x": {
+      "field": "month",
+      "type": "ordinal",
+      "title": null,
+      "sort": {
+        "field": "month_num",
+        "op": "min"
+      },
+      "scale": {
+        "paddingInner": 0.06,
+        "paddingOuter": 0
+      },
+      "axis": {
+        "orient": "top",
+        "labelAngle": 0,
+        "labelPadding": 6,
+        "labelColor": "#6b7780",
+        "labelFontSize": 11,
+        "domain": false,
+        "ticks": false
+      }
+    },
+    "y": {
+      "field": "airport",
+      "type": "nominal",
+      "title": null,
+      "sort": {
+        "field": "latitude",
+        "op": "max",
+        "order": "descending"
+      },
+      "scale": {
+        "paddingInner": 0.1,
+        "paddingOuter": 0
+      },
+      "axis": {
+        "minExtent": 250,
+        "maxExtent": 250,
+        "labelLimit": 230,
+        "labelPadding": 12,
+        "labelFontSize": 12,
+        "labelColor": "#37474f",
+        "domain": false,
+        "ticks": false,
+        "grid": false
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "cornerRadius": 2
+      },
+      "encoding": {
+        "color": {
+          "field": "share",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0.06,
+              0.08499999999999999,
+              0.11
+            ],
+            "range": [
+              "#e2f1f0",
+              "#3d9196",
+              "#0a3d41"
+            ],
+            "interpolate": "hcl",
+            "clamp": true
+          },
+          "legend": {
+            "title": "Share of 2024 passenger movements",
+            "orient": "none",
+            "legendX": -250,
+            "legendY": 464,
+            "direction": "horizontal",
+            "titleOrient": "top",
+            "titleAnchor": "start",
+            "gradientLength": 260,
+            "gradientThickness": 12,
+            "values": [
+              0.06,
+              0.08333333333333333,
+              0.11
+            ],
+            "format": ".0%",
+            "labelExpr": "abs(datum.value - 0.08333333333333333) < 0.0001 ? '8.3%' : datum.label"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "airport",
+            "title": "Airport"
+          },
+          {
+            "field": "month_name",
+            "title": "Month"
+          },
+          {
+            "field": "share",
+            "type": "quantitative",
+            "format": ".1%",
+            "title": "Share of 2024 movements"
+          },
+          {
+            "field": "movements",
+            "type": "quantitative",
+            "format": ",",
+            "title": "Passenger movements"
+          },
+          {
+            "field": "annual_movements",
+            "type": "quantitative",
+            "format": ",",
+            "title": "2024 total movements"
+          },
+          {
+            "field": "days_in_month",
+            "type": "quantitative",
+            "title": "Days in month"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.is_peak === 1"
+        }
+      ],
+      "mark": {
+        "type": "rect",
+        "cornerRadius": 2,
+        "fillOpacity": 0,
+        "stroke": "#263238",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "tooltip": [
+          {
+            "field": "airport",
+            "title": "Airport"
+          },
+          {
+            "field": "month_name",
+            "title": "Month"
+          },
+          {
+            "field": "share",
+            "type": "quantitative",
+            "format": ".1%",
+            "title": "Share of 2024 movements"
+          },
+          {
+            "field": "movements",
+            "type": "quantitative",
+            "format": ",",
+            "title": "Passenger movements"
+          },
+          {
+            "field": "annual_movements",
+            "type": "quantitative",
+            "format": ",",
+            "title": "2024 total movements"
+          },
+          {
+            "field": "days_in_month",
+            "type": "quantitative",
+            "title": "Days in month"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.is_peak === 1"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "fontWeight": 600,
+        "baseline": "middle"
+      },
+      "encoding": {
+        "text": {
+          "field": "share",
+          "type": "quantitative",
+          "format": ".1%"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.share >= 0.09",
+            "value": "white"
+          },
+          "value": "#37474f"
+        },
+        "tooltip": [
+          {
+            "field": "airport",
+            "title": "Airport"
+          },
+          {
+            "field": "month_name",
+            "title": "Month"
+          },
+          {
+            "field": "share",
+            "type": "quantitative",
+            "format": ".1%",
+            "title": "Share of 2024 movements"
+          },
+          {
+            "field": "movements",
+            "type": "quantitative",
+            "format": ",",
+            "title": "Passenger movements"
+          },
+          {
+            "field": "annual_movements",
+            "type": "quantitative",
+            "format": ",",
+            "title": "2024 total movements"
+          },
+          {
+            "field": "days_in_month",
+            "type": "quantitative",
+            "title": "Days in month"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "aggregate": [
+            {
+              "op": "max",
+              "field": "annual_movements",
+              "as": "annual_movements"
+            }
+          ],
+          "groupby": [
+            "airport",
+            "latitude",
+            "peak_month_num"
+          ]
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 14,
+        "fontSize": 11,
+        "color": "#6b7780"
+      },
+      "encoding": {
+        "x": {
+          "value": 520
+        },
+        "text": {
+          "field": "annual_movements",
+          "type": "quantitative",
+          "format": ".3~s"
+        },
+        "tooltip": {
+          "value": null
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "bottom",
+        "dx": 14,
+        "fontSize": 11,
+        "fontStyle": "italic",
+        "color": "#6b7780"
+      },
+      "encoding": {
+        "x": {
+          "value": 520
+        },
+        "y": {
+          "value": -6
+        },
+        "text": {
+          "value": "2024 total"
+        },
+        "tooltip": {
+          "value": null
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "rect",
+            "fill": "white",
+            "stroke": "#263238",
+            "strokeWidth": 2,
+            "cornerRadius": 2
+          },
+          "encoding": {
+            "x": {
+              "value": -249
+            },
+            "x2": {
+              "value": -236
+            },
+            "y": {
+              "value": 526
+            },
+            "y2": {
+              "value": 539
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "middle",
+            "fontSize": 12,
+            "color": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "value": -229
+            },
+            "y": {
+              "value": 532.5
+            },
+            "text": {
+              "value": "Square indicates busiest month"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "axisY": {
+      "minExtent": 250,
+      "maxExtent": 250
+    },
+    "legend": {
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12,
+      "labelColor": "#37474f",
+      "titlePadding": 6,
+      "labelOffset": 5,
+      "titleLimit": 420,
+      "labelLimit": 260
+    }
+  }
+}

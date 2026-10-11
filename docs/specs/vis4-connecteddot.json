@@ -1,0 +1,625 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Queensland's National parks* reduced by 9.8% over 15-16 years.",
+    "subtitle": [
+      "Area change by protected-area category in Queensland, from 2008 to 2023/24. Each national park category is reported separately.",
+      "Cape York national parks increased by 789.6% from 2009, this increase show Queensland's focus in Cape York's protection instead of other parks.",
+      "Each plot uses different hectare scales: compare lengths within each plot only.",
+      "* excludes Aboriginal land, Cape York, scientific and recovery.",
+      " ",
+      "Source: Queensland Government, indicator 1.1.0.3.1."
+    ],
+    "anchor": "start",
+    "offset": 16
+  },
+  "data": {
+    "url": "data/qld_area_change.csv",
+    "format": {
+      "type": "csv",
+      "parse": {
+        "start_ha": "number",
+        "end_ha": "number",
+        "change_ha": "number",
+        "pct_change": "number"
+      }
+    }
+  },
+  "transform": [
+    {
+      "calculate": "datum.change_ha > 0 ? 'Increase' : datum.change_ha < 0 ? 'Decrease' : 'No change'",
+      "as": "direction"
+    },
+    {
+      "calculate": "max(datum.start_ha, datum.end_ha)",
+      "as": "row_max"
+    },
+    {
+      "calculate": "(datum.start_ha + datum.end_ha) / 2",
+      "as": "mid_ha"
+    },
+    {
+      "calculate": "datum.change_ha === 0 ? 'no change' : datum.pct_change === null ? 'n/a (from 0)' : format(datum.pct_change, '+,.1f') + '%'",
+      "as": "change_text"
+    },
+    {
+      "calculate": "datum.baseline_note === 'category new since 2008'   ? 'new since 2008' : datum.baseline_note === 'area not reported in 2008'   ? 'from ' + datum.start_year : ''",
+      "as": "note_text"
+    }
+  ],
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "right": 12,
+    "bottom": 14
+  },
+  "vconcat": [
+    {
+      "title": {
+        "text": "Change in larger protected area categories in Queensland",
+        "anchor": "start",
+        "fontSize": 13,
+        "fontWeight": 600,
+        "color": "#37474f",
+        "offset": 6
+      },
+      "transform": [
+        {
+          "filter": "datum.row_max > 1000000"
+        },
+        {
+          "calculate": "min(max(datum.mid_ha, 707692.3076923077), 7292307.692307692)",
+          "as": "label_x"
+        }
+      ],
+      "width": 520,
+      "height": {
+        "step": 36
+      },
+      "encoding": {
+        "y": {
+          "field": "short_label",
+          "type": "nominal",
+          "title": null,
+          "sort": {
+            "field": "change_ha",
+            "op": "max",
+            "order": "descending"
+          },
+          "axis": {
+            "minExtent": 320,
+            "maxExtent": 320,
+            "labelLimit": 300,
+            "labelPadding": 12,
+            "labelFontSize": 12,
+            "labelColor": "#37474f",
+            "domain": false,
+            "ticks": false,
+            "grid": false
+          }
+        },
+        "tooltip": [
+          {
+            "field": "category",
+            "title": "Category"
+          },
+          {
+            "field": "tenure",
+            "title": "Tenure"
+          },
+          {
+            "field": "start_ha",
+            "type": "quantitative",
+            "format": ",.0f",
+            "title": "Area (start)"
+          },
+          {
+            "field": "start_year",
+            "title": "Start year"
+          },
+          {
+            "field": "end_ha",
+            "type": "quantitative",
+            "format": ",.0f",
+            "title": "Area (2023/24)"
+          },
+          {
+            "field": "change_ha",
+            "type": "quantitative",
+            "format": "+,.0f",
+            "title": "Change (ha)"
+          },
+          {
+            "field": "pct_change",
+            "type": "quantitative",
+            "format": "+.1f",
+            "title": "Change (%)"
+          },
+          {
+            "field": "baseline_note",
+            "title": "Baseline"
+          }
+        ]
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "rule",
+            "strokeWidth": 3,
+            "strokeCap": "round"
+          },
+          "encoding": {
+            "x": {
+              "field": "start_ha",
+              "type": "quantitative",
+              "scale": {
+                "domain": [
+                  0,
+                  8000000
+                ]
+              },
+              "axis": {
+                "title": "Protected area (hectares)",
+                "titleFontSize": 12,
+                "titleColor": "#6b7780",
+                "format": "~s",
+                "tickCount": 5,
+                "labelFontSize": 11,
+                "grid": true,
+                "gridColor": "#eceff1",
+                "domain": false,
+                "ticks": false
+              }
+            },
+            "x2": {
+              "field": "end_ha"
+            },
+            "color": {
+              "field": "direction",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "Increase",
+                  "No change",
+                  "Decrease"
+                ],
+                "range": [
+                  "#186e74",
+                  "#90a4ae",
+                  "#cc3311"
+                ]
+              },
+              "legend": null
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "point",
+            "filled": true,
+            "size": 95,
+            "strokeWidth": 1.6,
+            "stroke": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "field": "start_ha",
+              "type": "quantitative"
+            },
+            "fill": {
+              "datum": "2008",
+              "scale": {
+                "domain": [
+                  "2008",
+                  "2023/24"
+                ],
+                "range": [
+                  "#ffffff",
+                  "#37474f"
+                ]
+              },
+              "legend": null
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "point",
+            "filled": true,
+            "size": 135,
+            "strokeWidth": 1.6,
+            "stroke": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "field": "end_ha",
+              "type": "quantitative"
+            },
+            "fill": {
+              "datum": "2023/24",
+              "scale": {
+                "domain": [
+                  "2008",
+                  "2023/24"
+                ],
+                "range": [
+                  "#ffffff",
+                  "#37474f"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "center",
+            "dy": -16,
+            "baseline": "middle",
+            "fontSize": 11.5,
+            "fontWeight": 600
+          },
+          "encoding": {
+            "x": {
+              "field": "label_x",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "change_text"
+            },
+            "color": {
+              "field": "direction",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "Increase",
+                  "No change",
+                  "Decrease"
+                ],
+                "range": [
+                  "#186e74",
+                  "#90a4ae",
+                  "#cc3311"
+                ]
+              },
+              "legend": null
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "dx": 10,
+            "baseline": "middle",
+            "fontSize": 10.5,
+            "fontStyle": "italic",
+            "color": "#6b7780"
+          },
+          "encoding": {
+            "x": {
+              "field": "row_max",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "note_text"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "text": "Change in smaller protected area categories in Queensland",
+        "anchor": "start",
+        "fontSize": 13,
+        "fontWeight": 600,
+        "color": "#37474f",
+        "offset": 6
+      },
+      "transform": [
+        {
+          "filter": "datum.row_max <= 1000000"
+        },
+        {
+          "calculate": "min(max(datum.mid_ha, 35384.61538461538), 364615.3846153846)",
+          "as": "label_x"
+        }
+      ],
+      "width": 520,
+      "height": {
+        "step": 36
+      },
+      "encoding": {
+        "y": {
+          "field": "short_label",
+          "type": "nominal",
+          "title": null,
+          "sort": {
+            "field": "change_ha",
+            "op": "max",
+            "order": "descending"
+          },
+          "axis": {
+            "minExtent": 320,
+            "maxExtent": 320,
+            "labelLimit": 300,
+            "labelPadding": 12,
+            "labelFontSize": 12,
+            "labelColor": "#37474f",
+            "domain": false,
+            "ticks": false,
+            "grid": false
+          }
+        },
+        "tooltip": [
+          {
+            "field": "category",
+            "title": "Category"
+          },
+          {
+            "field": "tenure",
+            "title": "Tenure"
+          },
+          {
+            "field": "start_ha",
+            "type": "quantitative",
+            "format": ",.0f",
+            "title": "Area (start)"
+          },
+          {
+            "field": "start_year",
+            "title": "Start year"
+          },
+          {
+            "field": "end_ha",
+            "type": "quantitative",
+            "format": ",.0f",
+            "title": "Area (2023/24)"
+          },
+          {
+            "field": "change_ha",
+            "type": "quantitative",
+            "format": "+,.0f",
+            "title": "Change (ha)"
+          },
+          {
+            "field": "pct_change",
+            "type": "quantitative",
+            "format": "+.1f",
+            "title": "Change (%)"
+          },
+          {
+            "field": "baseline_note",
+            "title": "Baseline"
+          }
+        ]
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "rule",
+            "strokeWidth": 3,
+            "strokeCap": "round"
+          },
+          "encoding": {
+            "x": {
+              "field": "start_ha",
+              "type": "quantitative",
+              "scale": {
+                "domain": [
+                  0,
+                  400000
+                ]
+              },
+              "axis": {
+                "title": "Protected area (hectares)",
+                "titleFontSize": 12,
+                "titleColor": "#6b7780",
+                "format": "~s",
+                "tickCount": 5,
+                "labelFontSize": 11,
+                "grid": true,
+                "gridColor": "#eceff1",
+                "domain": false,
+                "ticks": false
+              }
+            },
+            "x2": {
+              "field": "end_ha"
+            },
+            "color": {
+              "field": "direction",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "Increase",
+                  "No change",
+                  "Decrease"
+                ],
+                "range": [
+                  "#186e74",
+                  "#90a4ae",
+                  "#cc3311"
+                ]
+              },
+              "legend": {
+                "orient": "none",
+                "direction": "horizontal",
+                "titleOrient": "top",
+                "titleAnchor": "start",
+                "legendX": -320,
+                "title": "Direction of change in area",
+                "legendY": 306,
+                "symbolType": "stroke",
+                "symbolStrokeWidth": 4
+              }
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "point",
+            "filled": true,
+            "size": 95,
+            "strokeWidth": 1.6,
+            "stroke": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "field": "start_ha",
+              "type": "quantitative"
+            },
+            "fill": {
+              "datum": "2008",
+              "scale": {
+                "domain": [
+                  "2008",
+                  "2023/24"
+                ],
+                "range": [
+                  "#ffffff",
+                  "#37474f"
+                ]
+              },
+              "legend": {
+                "orient": "none",
+                "direction": "horizontal",
+                "titleOrient": "top",
+                "titleAnchor": "start",
+                "legendX": -320,
+                "title": "Comparison year",
+                "legendY": 352,
+                "symbolType": "circle",
+                "symbolStrokeColor": "#37474f",
+                "symbolSize": 110
+              }
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "point",
+            "filled": true,
+            "size": 135,
+            "strokeWidth": 1.6,
+            "stroke": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "field": "end_ha",
+              "type": "quantitative"
+            },
+            "fill": {
+              "datum": "2023/24",
+              "scale": {
+                "domain": [
+                  "2008",
+                  "2023/24"
+                ],
+                "range": [
+                  "#ffffff",
+                  "#37474f"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "center",
+            "dy": -16,
+            "baseline": "middle",
+            "fontSize": 11.5,
+            "fontWeight": 600
+          },
+          "encoding": {
+            "x": {
+              "field": "label_x",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "change_text"
+            },
+            "color": {
+              "field": "direction",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "Increase",
+                  "No change",
+                  "Decrease"
+                ],
+                "range": [
+                  "#186e74",
+                  "#90a4ae",
+                  "#cc3311"
+                ]
+              },
+              "legend": null
+            }
+          }
+        },
+        {
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "dx": 10,
+            "baseline": "middle",
+            "fontSize": 10.5,
+            "fontStyle": "italic",
+            "color": "#6b7780"
+          },
+          "encoding": {
+            "x": {
+              "field": "row_max",
+              "type": "quantitative"
+            },
+            "text": {
+              "field": "note_text"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "spacing": 34,
+  "resolve": {
+    "scale": {
+      "x": "independent",
+      "y": "independent",
+      "color": "independent",
+      "fill": "independent"
+    }
+  },
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "axisY": {
+      "minExtent": 320,
+      "maxExtent": 320
+    },
+    "axisX": {
+      "labelColor": "#6b7780"
+    },
+    "legend": {
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12,
+      "titlePadding": 6,
+      "labelOffset": 5,
+      "titleLimit": 420,
+      "labelLimit": 260
+    }
+  }
+}

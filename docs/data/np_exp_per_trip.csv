@@ -1,0 +1,17 @@
+region,short_label,group,exp_per_trip_2024,exp_per_trip_2023,trips_2024,expenditure_m_2024,nights_2024,nights_per_trip_2024
+North Coast NSW,North Coast NSW,National park regions,792.0,870.0,6239554,4939.6,20590741,3.3
+South Coast,South Coast,National park regions,708.0,638.0,4493536,3180.0,14810862,3.3
+Gold Coast,Gold Coast,National park regions,1344.0,1324.0,4286628,5760.6,14893637,3.5
+Sunshine Coast,Sunshine Coast,National park regions,981.0,944.0,4027996,3953.3,13519865,3.4
+Australia's South West,Australia's South West,National park regions,696.0,817.0,3264171,2271.3,10439326,3.2
+Queensland Country,Queensland Country,National park regions,535.0,532.0,3136989,1679.1,9599106,3.1
+Canberra,Canberra,National park regions,826.0,787.0,3097872,2559.6,7540310,2.4
+Central NSW,Central NSW,National park regions,662.0,660.0,2771536,1835.8,6860394,2.5
+Great Ocean Road,Great Ocean Road,National park regions,599.0,640.0,2465315,1477.0,6447192,2.6
+High Country,High Country,National park regions,640.0,684.0,2438291,1561.7,7012070,2.9
+Sydney,Sydney,Capital cities,1075.0,1051.0,11338094,12187.0,31664899,2.8
+Melbourne,Melbourne,Capital cities,1191.0,1173.0,10410833,12397.8,29051284,2.8
+Brisbane,Brisbane,Capital cities,1012.0,992.0,8149136,8247.2,25602912,3.1
+Destination Perth,Destination Perth,Capital cities,1198.0,1217.0,4449223,5329.3,15116167,3.4
+Adelaide,Adelaide,Capital cities,1130.0,1169.0,3531189,3989.4,11584847,3.3
+Darwin,Darwin,Capital cities,1877.0,1659.0,689277,1293.8,3694822,5.4

@@ -1,0 +1,499 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "New South Wales receives the most interstate overnight trips",
+    "subtitle": [
+      "Ribbon width shows interstate overnight trips from residents’ state to destination in 2024.",
+      "Note: grey = not published or unallocated and intrastate trips excluded.",
+      " ",
+      "Source: TRA, National Visitor Survey, tra-nvs-quarterly-december-2024-2023.xlsx, Table 4"
+    ],
+    "anchor": "start",
+    "offset": 30
+  },
+  "width": 520,
+  "height": 480,
+  "padding": {
+    "left": 5,
+    "top": 5,
+    "right": 12,
+    "bottom": 14
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/np_trip_flows_links.csv",
+        "format": {
+          "type": "csv",
+          "parse": {
+            "t": "number",
+            "y_top": "number",
+            "y_bottom": "number",
+            "trips": "number",
+            "share_of_destination": "number"
+          }
+        }
+      },
+      "transform": [
+        {
+          "calculate": "datum.origin === 'NP' ? datum.np_origins : '—'",
+          "as": "np_text"
+        }
+      ],
+      "params": [
+        {
+          "name": "originHover",
+          "select": {
+            "type": "point",
+            "fields": [
+              "origin"
+            ],
+            "on": "pointerover",
+            "clear": "pointerout"
+          }
+        }
+      ],
+      "mark": {
+        "type": "area",
+        "interpolate": "linear"
+      },
+      "encoding": {
+        "x": {
+          "field": "t",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -0.028,
+              1.028
+            ],
+            "nice": false,
+            "zero": false
+          },
+          "axis": null
+        },
+        "y": {
+          "field": "y_top",
+          "type": "quantitative",
+          "scale": {
+            "reverse": true,
+            "nice": false,
+            "zero": true
+          },
+          "axis": null,
+          "stack": null
+        },
+        "y2": {
+          "field": "y_bottom"
+        },
+        "detail": {
+          "field": "link_id"
+        },
+        "color": {
+          "field": "origin",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "NSW",
+              "VIC",
+              "QLD",
+              "SA",
+              "WA",
+              "TAS",
+              "NT",
+              "ACT",
+              "NP"
+            ],
+            "range": [
+              "#2a78d6",
+              "#eb6834",
+              "#1baf7a",
+              "#eda100",
+              "#e87ba4",
+              "#008300",
+              "#4a3aa7",
+              "#e34948",
+              "#b0bec5"
+            ]
+          },
+          "legend": null
+        },
+        "opacity": {
+          "condition": [
+            {
+              "test": "length(data('originHover_store')) === 0",
+              "value": 0.5
+            },
+            {
+              "param": "originHover",
+              "empty": false,
+              "value": 0.85
+            }
+          ],
+          "value": 0.08
+        },
+        "tooltip": [
+          {
+            "field": "origin_name",
+            "title": "Travellers from"
+          },
+          {
+            "field": "destination_name",
+            "title": "Trip to"
+          },
+          {
+            "field": "trips",
+            "type": "quantitative",
+            "format": ",",
+            "title": "Overnight trips"
+          },
+          {
+            "field": "share_of_destination",
+            "type": "quantitative",
+            "format": ".1%",
+            "title": "Share of interstate trips to there"
+          },
+          {
+            "field": "np_text",
+            "title": "Not published from"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/np_trip_flows_nodes.csv",
+        "format": {
+          "type": "csv",
+          "parse": {
+            "y_top": "number",
+            "y_bottom": "number",
+            "trips": "number",
+            "layout_height": "number"
+          }
+        }
+      },
+      "transform": [
+        {
+          "calculate": "datum.side === 'origin' ? -0.028 : 1",
+          "as": "x0"
+        },
+        {
+          "calculate": "datum.side === 'origin' ? 0 : 1.028",
+          "as": "x1"
+        },
+        {
+          "calculate": "(datum.y_top + datum.y_bottom) / 2",
+          "as": "y_mid"
+        },
+        {
+          "calculate": "datum.code",
+          "as": "origin"
+        },
+        {
+          "calculate": "datum.code === 'NP'",
+          "as": "is_np"
+        },
+        {
+          "calculate": "datum.side === 'origin' ? 'Published interstate trips by its residents' : 'Interstate trips drawn into it'",
+          "as": "trips_meaning"
+        },
+        {
+          "calculate": "datum.np_origins === '' ? '—' : datum.np_origins",
+          "as": "np_text"
+        }
+      ],
+      "encoding": {
+        "y": {
+          "field": "y_mid",
+          "type": "quantitative",
+          "scale": {
+            "reverse": true,
+            "nice": false,
+            "zero": true
+          },
+          "axis": null
+        }
+      },
+      "layer": [
+        {
+          "mark": {
+            "type": "rect"
+          },
+          "encoding": {
+            "x": {
+              "field": "x0",
+              "type": "quantitative",
+              "scale": {
+                "domain": [
+                  -0.028,
+                  1.028
+                ],
+                "nice": false,
+                "zero": false
+              },
+              "axis": null
+            },
+            "x2": {
+              "field": "x1"
+            },
+            "y": {
+              "field": "y_top",
+              "type": "quantitative",
+              "scale": {
+                "reverse": true,
+                "nice": false,
+                "zero": true
+              },
+              "axis": null
+            },
+            "y2": {
+              "field": "y_bottom"
+            },
+            "color": {
+              "condition": {
+                "test": "datum.side === 'destination'",
+                "value": "#455a64"
+              },
+              "field": "origin",
+              "type": "nominal",
+              "scale": {
+                "domain": [
+                  "NSW",
+                  "VIC",
+                  "QLD",
+                  "SA",
+                  "WA",
+                  "TAS",
+                  "NT",
+                  "ACT",
+                  "NP"
+                ],
+                "range": [
+                  "#2a78d6",
+                  "#eb6834",
+                  "#1baf7a",
+                  "#eda100",
+                  "#e87ba4",
+                  "#008300",
+                  "#4a3aa7",
+                  "#e34948",
+                  "#b0bec5"
+                ]
+              },
+              "legend": null
+            },
+            "tooltip": [
+              {
+                "field": "name",
+                "title": "State or territory"
+              },
+              {
+                "field": "trips",
+                "type": "quantitative",
+                "format": ",",
+                "title": "Overnight trips"
+              },
+              {
+                "field": "trips_meaning",
+                "title": "Counted as"
+              },
+              {
+                "field": "np_text",
+                "title": "Not published from"
+              }
+            ]
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.side === 'origin' && !datum.is_np"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "middle",
+            "fontSize": 11.5,
+            "color": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "value": -250
+            },
+            "text": {
+              "field": "name"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.is_np"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "middle",
+            "fontSize": 11.5,
+            "fontStyle": "italic",
+            "color": "#6b7780"
+          },
+          "encoding": {
+            "x": {
+              "value": -250
+            },
+            "text": {
+              "field": "name"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.side === 'origin'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "right",
+            "baseline": "middle",
+            "fontSize": 11,
+            "color": "#6b7780"
+          },
+          "encoding": {
+            "x": {
+              "value": -8
+            },
+            "text": {
+              "field": "trips",
+              "type": "quantitative",
+              "format": ".3~s"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.side === 'destination'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "left",
+            "baseline": "middle",
+            "fontSize": 11.5,
+            "fontWeight": 600,
+            "color": "#37474f"
+          },
+          "encoding": {
+            "x": {
+              "value": 528
+            },
+            "text": {
+              "field": "name"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        },
+        {
+          "transform": [
+            {
+              "filter": "datum.side === 'destination'"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "align": "right",
+            "baseline": "middle",
+            "fontSize": 11,
+            "color": "#6b7780"
+          },
+          "encoding": {
+            "x": {
+              "value": 748
+            },
+            "text": {
+              "field": "trips",
+              "type": "quantitative",
+              "format": ".3~s"
+            },
+            "tooltip": {
+              "value": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "text": "Travellers live in",
+            "x": -250
+          },
+          {
+            "text": "Overnight destination",
+            "x": 528
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "bottom",
+        "fontSize": 12,
+        "fontWeight": 600,
+        "color": "#37474f"
+      },
+      "encoding": {
+        "x": {
+          "field": "x",
+          "type": "quantitative",
+          "scale": null
+        },
+        "y": {
+          "value": -12
+        },
+        "text": {
+          "field": "text"
+        },
+        "tooltip": {
+          "value": null
+        }
+      }
+    }
+  ],
+  "resolve": {
+    "scale": {
+      "x": "shared",
+      "y": "shared",
+      "color": "shared"
+    }
+  },
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    }
+  }
+}

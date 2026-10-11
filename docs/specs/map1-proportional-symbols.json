@@ -1,0 +1,246 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": "container",
+  "height": "container",
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "title": {
+    "text": "National parks cluster along the east coast, with larger parks in the interior",
+    "subtitle": [
+      "CAPAD 2024 records classified as National Park; circle size shows area in hectares.",
+      "Colour shows the first-gazetted era; darker marks older parks, orange marks unknown dates.",
+      " ",
+      "Source: CAPAD 2024, terrestrial and marine protected-area records."
+    ],
+    "anchor": "start"
+  },
+  "projection": {
+    "type": "conicEqualArea",
+    "parallels": [
+      -18,
+      -36
+    ],
+    "rotate": [
+      -132,
+      0
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/Australia_topo.json",
+        "format": {
+          "type": "topojson",
+          "feature": "map"
+        }
+      },
+      "transform": [
+        {
+          "filter": "datum.properties.name !== 'Macquarie Island' && datum.properties.name !== 'Norfolk Island'"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "fill": "#f0f2f3",
+        "stroke": "#ffffff",
+        "strokeWidth": 1
+      }
+    },
+    {
+      "data": {
+        "url": "data/capad2024_points.csv",
+        "format": {
+          "type": "csv",
+          "parse": {
+            "lon": "number",
+            "lat": "number",
+            "hectares": "number",
+            "year": "number"
+          }
+        }
+      },
+      "transform": [
+        {
+          "filter": {
+            "field": "type",
+            "oneOf": [
+              "National Park"
+            ]
+          }
+        },
+        {
+          "filter": "datum.lon >= 90 && datum.lon <= 170 && datum.lat >= -60"
+        },
+        {
+          "aggregate": [
+            {
+              "op": "sum",
+              "field": "hectares",
+              "as": "hectares"
+            },
+            {
+              "op": "min",
+              "field": "year",
+              "as": "year"
+            },
+            {
+              "op": "argmax",
+              "field": "hectares",
+              "as": "main_part"
+            }
+          ],
+          "groupby": [
+            "name",
+            "state",
+            "type",
+            "env"
+          ]
+        },
+        {
+          "calculate": "datum.main_part.lon",
+          "as": "lon"
+        },
+        {
+          "calculate": "datum.main_part.lat",
+          "as": "lat"
+        },
+        {
+          "calculate": "!isValid(datum.year) ? 'Unknown date' : datum.year < 1970 ? 'Before 1970' : datum.year < 1990 ? '1970–1989' : datum.year < 2010 ? '1990–2009' : '2010–2024'",
+          "as": "era"
+        }
+      ],
+      "mark": {
+        "type": "circle",
+        "opacity": 0.85,
+        "stroke": "#ffffff",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "longitude": {
+          "field": "lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "lat",
+          "type": "quantitative"
+        },
+        "size": {
+          "field": "hectares",
+          "type": "quantitative",
+          "scale": {
+            "type": "linear",
+            "zero": true,
+            "range": [
+              6,
+              {
+                "expr": "width * height / 150"
+              }
+            ]
+          },
+          "legend": {
+            "title": "Park area (hectares)",
+            "orient": "none",
+            "legendX": {
+              "expr": "width * 0.27"
+            },
+            "legendY": {
+              "expr": "height * 0.78"
+            },
+            "padding": 4,
+            "rowPadding": 2,
+            "values": [
+              100000,
+              1000000,
+              2500000
+            ],
+            "format": ".2~s",
+            "symbolFillColor": "transparent",
+            "symbolStrokeColor": "#555"
+          }
+        },
+        "color": {
+          "field": "era",
+          "type": "ordinal",
+          "scale": {
+            "domain": [
+              "Before 1970",
+              "1970–1989",
+              "1990–2009",
+              "2010–2024",
+              "Unknown date"
+            ],
+            "range": [
+              "#0b4a4f",
+              "#186e74",
+              "#459298",
+              "#6bb8be",
+              "#e18b3b"
+            ]
+          },
+          "legend": {
+            "title": "Era first gazetted",
+            "orient": "none",
+            "legendX": 4,
+            "legendY": {
+              "expr": "height * 0.78"
+            },
+            "direction": "vertical"
+          }
+        },
+        "order": {
+          "field": "hectares",
+          "sort": "descending"
+        },
+        "tooltip": [
+          {
+            "field": "name",
+            "title": "Name"
+          },
+          {
+            "field": "state",
+            "title": "State/Authority"
+          },
+          {
+            "field": "env",
+            "title": "Environment (T/M)"
+          },
+          {
+            "field": "hectares",
+            "title": "Area (ha)",
+            "format": ",.0f"
+          },
+          {
+            "field": "year",
+            "title": "Gazetted"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "font": "system-ui, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "title": {
+      "fontSize": 18,
+      "fontWeight": 600,
+      "subtitleFontSize": 13,
+      "subtitleColor": "#555",
+      "subtitlePadding": 4
+    },
+    "legend": {
+      "titleLimit": 400,
+      "fillColor": "#ffffffd9",
+      "strokeColor": "#dddddd",
+      "cornerRadius": 3,
+      "padding": 8,
+      "offset": 4,
+      "titleFontSize": 12,
+      "titleFontWeight": 600,
+      "labelFontSize": 12
+    }
+  }
+}
