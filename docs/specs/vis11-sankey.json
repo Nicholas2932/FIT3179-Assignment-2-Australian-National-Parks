@@ -11,7 +11,7 @@
     "anchor": "start",
     "offset": 30
   },
-  "width": 520,
+  "width": 370,
   "height": 480,
   "padding": {
     "left": 5,
@@ -398,7 +398,7 @@
           },
           "encoding": {
             "x": {
-              "value": 528
+              "value": 378
             },
             "text": {
               "field": "name"
@@ -423,7 +423,7 @@
           },
           "encoding": {
             "x": {
-              "value": 748
+              "value": 598
             },
             "text": {
               "field": "trips",
@@ -446,7 +446,7 @@
           },
           {
             "text": "Overnight destination",
-            "x": 528
+            "x": 378
           }
         ]
       },

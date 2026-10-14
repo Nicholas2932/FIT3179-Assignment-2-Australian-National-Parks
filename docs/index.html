@@ -1,177 +1,596 @@
 <!DOCTYPE html>
+<!--
+  ============================================================================
+  index.html - "Australian National Parks Tourism", a data story in 11 charts
+  ============================================================================
+
+  HOW THIS PAGE IS BUILT
+  - This file holds the CONTENT: the headings, the story text, and an empty
+    <div> for each chart. style.css (same folder) holds the LOOK: colours,
+    fonts and the left/right zig-zag. The script at the bottom of this file
+    asks Vega-Lite to draw each chart into its empty <div>.
+  - Text between "<!-" + "-" and "-" + "->" (like this block) is a COMMENT:
+    the browser ignores it. Comments in this file explain what each part is
+    and which rule in style.css styles it ("see style.css 7" = section 7).
+
+  THE STORY, TOP TO BOTTOM
+    Hero ............. title and byline
+    Introduction ..... what the story investigates, and a roadmap
+    01 Establishing the landscape ... Figure 1 map 1, Figure 2 map 3, Figure 3 map 2
+    02 Change ........................ Figure 4 vis 4, Figure 5 vis 5
+    03 Regional tourism .............. Figure 6 vis 6, Figure 7 vis 7, Figure 8 vis 11
+    04 Access over time .............. Figure 9 vis 8, Figure 10 vis 9
+    05 The business base ............. Figure 11 vis 10
+    Conclusion ....... what it all adds up to
+    Footer ........... data sources and credits
+  The charts alternate sides: Figure 1's chart is on the LEFT with its text on
+  the right, Figure 2's chart is on the RIGHT, and so on down the page.
+
+  WRITING THE STORY
+  Every box with a dashed ochre outline is a TODO placeholder (class="todo").
+  Each one says what to write and how long it should be. The text column fits
+  about 60 characters per line, so "4 lines" = about 240 characters. Each
+  placeholder is already about as long as the text it stands for, so the page
+  shows the real layout. To finish one: replace its words with yours and
+  delete class="todo" from the element.
+  ============================================================================
+-->
 <html lang="en">
 <head>
+  <!-- Character set: lets the page use curly quotes, dashes and the like. -->
   <meta charset="utf-8">
+  <!-- Tells phones to use the real screen width instead of pretending to be a
+       desktop and zooming out. Without it, the small-screen rules in
+       style.css would never switch on. -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Australian National Parks</title>
+  <!-- The text in the browser tab and in search results. -->
+  <title>Australian National Parks Tourism</title>
+  <meta name="description" content="A data story about visitor numbers, seasons and long-term tourism trends in Australia's national parks and protected areas.">
 
-  <!-- Vega, Vega-Lite and Vega-Embed (pinned versions) -->
+  <!-- Vega, Vega-Lite and Vega-Embed, loaded from a CDN (a public file server).
+       The exact version numbers are pinned so a future release can never
+       change how the charts look.
+         vega       - draws charts from a low-level description
+         vega-lite  - turns the short specs in specs/*.json into Vega
+         vega-embed - the helper that loads a spec and puts it on the page -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5.33.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.23.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.29.0"></script>
 
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 0 auto; padding: 1rem; max-width: 1100px; }
-
-    /* "container" sizing in the specs means: fill this box.
-       The box needs BOTH a width and a height, or the map collapses.
-
-       Australia measures 1.043 times wider than tall in the projection all three maps use,
-       so the MAP part of a box wants:  height = width x 0.959.
-       The specs use autosize "fit", which lays the title out INSIDE the box, so the box
-       itself needs that map height PLUS room for the title block. aspect-ratio keeps the
-       whole thing proportional as the window narrows, which a fixed vh height cannot do.
-
-       These two ratios were measured, not guessed: at 1100px wide they are the shortest
-       boxes at which each map stops growing. A taller box is pure whitespace, because both
-       maps are limited by their WIDTH, not their height.
-         .map-box  1100 x 1105 -> Australia 1086 x 1042 px   (was 517 x 496)
-         #map2     1100 x 1025 -> Australia  986 x  946 px
-       Map 2 comes out ~9% smaller than map 1 because its ACT call-out label sits east of
-       the coast: "fit" shrinks the projection to keep that text inside the frame.
-       Re-measure both if you change the type scale: a bigger title eats into the map. */
-    /* Size to the VIEWPORT HEIGHT as well as the page width, so a whole map is visible without
-       scrolling. --map-ratio is box height / box width; the width is capped at what fits in
-       (100vh - 2rem of body padding) at that ratio, never more than the page column, and never
-       below 600px so the type and symbols stay legible on short windows. */
-    .map-box {
-      --map-ratio: 1.005;
-      width: min(100%, max(600px, calc((100vh - 2rem) / var(--map-ratio))));
-      aspect-ratio: 1 / var(--map-ratio);
-      margin: 0 auto 2.5rem;
-    }
-    #map2 { --map-ratio: 0.932; }
-
-    /* Each small multiple has its own container-sized Vega-Lite view.
-
-       Map 3's heading, subtitle and key are plain HTML, while maps 1 and 2 draw theirs inside
-       the chart. These sizes therefore have to be kept level with config.title and config.legend
-       in specs/map1-proportional-symbols.json by hand, or the three maps stop looking like one page.
-       Sizes are in px, not rem, so they match the chart text exactly whatever the root size. */
-    .map3-comparison { margin-bottom: 2rem; }
-    .map3-comparison h2 { margin: 0 0 .3rem; font-size: 18px; font-weight: 600; }   /* = title */
-    .map3-comparison > p { margin: 0 0 .9rem; font-size: 13px; color: #555; }       /* = subtitle */
-    /* Shared key for all four panels. A smaller bottom margin than top binds it to the
-       panels it explains rather than to the subtitle above it. */
-    .map3-legend { margin: 0 0 .75rem; font-size: 12px; }
-    /* <strong> is 700 by default; 600 matches the legend titles the charts draw. */
-    .map3-legend strong { font-weight: 600; }
-    /* No gap between the steps, so all seven bands — zero included — read as one ordered
-       ramp rather than as separate chips. inline-flex keeps the strip only as wide as its
-       swatches, instead of stretching across the full page. */
-    .map3-ramp { display: inline-flex; margin-top: .45rem; }
-    .map3-ramp-step { display: flex; flex-direction: column; align-items: center; }
-    .map3-ramp-swatch { display: block; width: 44px; height: 13px; }
-    .map3-ramp-label { margin-top: .2rem; font-size: 12px; }                        /* = legend label */
-
-    /* ---- Vis 4 and vis 5 ----------------------------------------------------
-       These two are sized differently from the three maps, on purpose.
-       A map has no minimum readable width: shrink it and it is still a map. A dumbbell row and
-       a bump-chart year do have one - squeeze them and the category labels collide, the years
-       overlap, and the chart stops being readable before it stops fitting. So both specs set a
-       fixed pixel width instead of "container", and on a narrow screen the wrapper scrolls
-       sideways rather than crushing the chart.
-       Neither needs an aspect-ratio for the same reason: each spec works out its own height
-       from its number of rows, so the <div> simply takes whatever height Vega gives it. */
-    .chart-block { margin-bottom: 2.5rem; }
-    .chart-scroll { overflow-x: auto; }
-
-    .map3-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
-    .map3-panels section { min-width: 0; }
-    /* Panel headings sit a step below a map title: they name a category, not the whole map. */
-    .map3-panels h3 { margin: 0 0 .4rem; font-size: 14px; font-weight: 600; }
-    /* Same rule as the big maps: height = width x 0.959 is Australia's shape in this
-       projection, so the map fills the panel instead of leaving slack down both sides.
-       There is no title inside these specs, so no extra allowance is needed. */
-    .map3-panel-chart { width: 100%; aspect-ratio: 1 / 0.959; }
-    @media (max-width: 640px) {
-      .map3-panels { grid-template-columns: 1fr; }
-    }
-  </style>
+  <!-- All of the page's styling. No web fonts are loaded: the page uses only
+       fonts already on readers' devices (see style.css 1). -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="map1" class="map-box"></div>
-  <div id="map2" class="map-box"></div>
-  <div id="map3"></div>
 
-  <!-- ---- Vis 4: connected dot plot (change in area, 2008 -> 2023/24) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis4"></div></div>
-  </section>
+  <!-- ======================================================================
+       HERO - the dark forest-green header (style.css 4)
+       <header> marks introductory content. .hero-inner keeps the text lined
+       up with the charts below (style.css 5).
+       ====================================================================== -->
+  <header class="hero">
+    <div class="hero-inner">
+      <!-- Small label above the title. -->
+      <p class="hero-kicker">FIT3179 Data Visualisation</p>
 
-  <!-- ---- Vis 5: bump chart (rank by number of protected areas, 2008 -> 2024) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis5"></div></div>
-  </section>
+      <!-- TODO (optional): this working title is the topic name. Replace it
+           with your own headline if you like; keep it to about 45 characters
+           so it fits on two lines. <h1> = the single most important heading
+           on the page. -->
+      <h1 class="hero-title">Australian National Parks Tourism</h1>
 
-  <!-- ---- Vis 6: paired bar chart (overnight trips, 2023 vs 2024) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis6"></div></div>
-  </section>
+      <!-- TODO: add the month and year (e.g. the submission date). -->
+      <p class="byline">By Nicholas Ong &middot; <span class="todo">TODO: month and year</span></p>
+    </div>
+  </header>
 
-  <!-- ---- Vis 7: lollipop chart (spend per overnight trip, 2024) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis7"></div></div>
-  </section>
+  <!-- The banded "rock strata" line under the hero (style.css 3).
+       aria-hidden="true" tells screen readers to skip it: it is decoration. -->
+  <div class="strata" aria-hidden="true"></div>
 
-  <!-- ---- Vis 8: line chart (monthly passengers, top five national-park routes) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis8"></div></div>
-  </section>
+  <!-- <main> wraps the page's main content: everything except the header and
+       footer. Screen readers let users jump straight to it. -->
+  <main>
 
-  <!-- ---- Vis 9: heatmap (share of each gateway's 2024 domestic movements, by month) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis9"></div></div>
-  </section>
+    <!-- ====================================================================
+         INTRODUCTION (sage background; one centred ~60-character column)
+         style.css 5 (.intro-inner) and 6 (.intro, .roadmap)
+         id="introduction" lets a link jump here with href="#introduction".
+         aria-labelledby names the section after its heading, for screen
+         readers.
+         ==================================================================== -->
+    <section class="intro" id="introduction" aria-labelledby="introduction-title">
+      <div class="intro-inner">
+        <h2 class="chapter-title" id="introduction-title">Introduction</h2>
 
-  <!-- ---- Vis 10: butterfly chart (tourism businesses by employment size, June 2024) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis10"></div></div>
-  </section>
+        <!-- DRAFT, adapted from the assignment's topic description. It states
+             what the story investigates, not what it finds, so edit it freely
+             or keep it as it is. -->
+        <p class="intro-lede">This story investigates visitor numbers to Australia&rsquo;s national parks and protected areas. It compares visitation across parks and across seasons, looks for long-term tourism trends, and explores how outdoor tourism has changed over time.</p>
 
-  <!-- ---- Vis 11: sankey (interstate overnight trips, origin -> destination, 2024) ---- -->
-  <section class="chart-block">
-    <div class="chart-scroll"><div id="vis11"></div></div>
-  </section>
+        <!-- TODO: your hook. Ideas: why should anyone care how many people
+             visit national parks (local jobs, conservation, crowding)? What
+             might a reader already assume (e.g. "parks are busiest in summer")
+             that the charts will test? Keep it personal, and do not give the
+             findings away yet. -->
+        <p class="todo">TODO &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Add your hook: why does this question matter, or what might a reader already assume about national parks that the charts will test? Keep it short and personal.</p>
 
+        <!-- The roadmap: one link per section, so readers can see the path
+             through the story and jump to any part. <ol> = ordered list.
+             Each href="#..." matches the id of a <section> below. -->
+        <p>The story moves through five parts:</p>
+        <ol class="roadmap">
+          <li><a href="#landscape"><span class="roadmap-num">01</span> <span class="roadmap-name">Establishing the landscape</span></a></li>
+          <li><a href="#change"><span class="roadmap-num">02</span> <span class="roadmap-name">Change</span></a></li>
+          <li><a href="#regional"><span class="roadmap-num">03</span> <span class="roadmap-name">Regional tourism</span></a></li>
+          <li><a href="#access"><span class="roadmap-num">04</span> <span class="roadmap-name">Access over time</span></a></li>
+          <li><a href="#business"><span class="roadmap-num">05</span> <span class="roadmap-name">The business base</span></a></li>
+        </ol>
+      </div>
+    </section>
+
+    <div class="strata strata--thin" aria-hidden="true"></div>
+
+    <!-- ====================================================================
+         SECTION 01 - ESTABLISHING THE LANDSCAPE (sand background)
+         Before counting visitors: what is there to visit, where, and who
+         looks after it. Three maps, ending on the state with the smallest
+         protected share (Queensland), which sets up Section 02.
+         ==================================================================== -->
+    <section class="chapter chapter--sand" id="landscape" aria-labelledby="landscape-title">
+
+      <!-- Section heading block (style.css 6): kicker, title, lead-in. -->
+      <header class="chapter-head">
+        <p class="chapter-kicker">Section 01</p>
+        <h2 class="chapter-title" id="landscape-title">Establishing the landscape</h2>
+        <!-- TODO: section intro. Answer "what is there to visit, where is it,
+             and who looks after it?" and tell the reader what the three maps
+             below will show. -->
+        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Before counting visitors, set the scene: what is there to visit, where is it, and who looks after it? Say what the three maps below will show.</p>
+      </header>
+
+      <!-- ---- FIGURE 1 - map 1: national parks by size and era ------------
+           A story row (style.css 7). No "--flip", so the CHART is on the LEFT
+           and the text on the right. The chart always comes first in the
+           HTML; on phones the text simply follows below it.
+           <figure> = a self-contained illustration; class="chart-card" makes
+           it the white card (style.css 8). The empty <div id="map1"> is where
+           the script at the bottom draws the chart; class="map-box" sizes it
+           to the window (style.css 11). -->
+      <article class="story-row">
+        <figure class="chart-card">
+          <div id="map1" class="map-box"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 1</p>
+          <!-- TODO for Figure 1. Budget: heading <= 40 characters; body 9-12
+               lines (540-720 characters) across the three paragraphs.
+               Ideas: where do the circles bunch up (coast vs interior)? Which
+               parks are the biggest? Do older (darker) and newer parks sit in
+               different places? Don't repeat the chart's subtitle; tell the
+               reader what to notice and why it matters for tourism. -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Where do the national parks cluster, and where are the largest ones? Point the reader to one place on the map to look at first, so they learn how to read the circles.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). What does the colour add? Compare older and newer parks: do they sit in different places, and what might that suggest about when land was protected?</p>
+          <p class="todo">TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Figure 2: now that we know where the parks are, ask who looks after them.</p>
+        </div>
+      </article>
+
+      <!-- ---- FIGURE 2 - map 3: protected areas by governance --------------
+           "story-row--flip": the CHART is on the RIGHT, the text on the left.
+           Map 3 is built by embedMap3() in the script below: an HTML heading
+           and colour key plus four small maps. class="chart-stretch" lets it
+           fill the whole card (style.css 8). -->
+      <article class="story-row story-row--flip">
+        <figure class="chart-card">
+          <div id="map3" class="chart-stretch"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 2</p>
+          <!-- TODO for Figure 2. Budget: heading <= 40; body 9-12 lines
+               (540-720 characters).
+               Ideas: which governance types have the most protected areas,
+               and where? Why might it matter to a visitor who manages a park
+               (access, facilities, rules)? If unsure, ask it as a question. -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which governance types hold the most protected areas, and where do they concentrate? Tell the reader which two panels to compare first, and what to look for.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Why might governance matter to a visitor? Think about access, facilities and who sets the rules; phrase it as a question if you are unsure.</p>
+          <p class="todo">TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Figure 3: how much of each state&rsquo;s land is protected overall?</p>
+        </div>
+      </article>
+
+      <!-- ---- FIGURE 3 - map 2: share of land protected, by state ----------
+           Back to chart LEFT. Ends Section 01 on the state with the lowest
+           share, which is the bridge into Section 02. -->
+      <article class="story-row">
+        <figure class="chart-card">
+          <div id="map2" class="map-box"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 3</p>
+          <!-- TODO for Figure 3. Budget: heading <= 40; body 9-12 lines
+               (540-720 characters).
+               Ideas: name the highest and lowest shares; warn that a large
+               protected share does not mean many visitors; end by asking why
+               the lowest-share state is worth a closer look. -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which states and territories protect the largest and smallest share of their land? Name the extremes the reader should notice first, in your own words.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Add a caution: a bigger protected share does not mean more visitors. Note what this map can, and cannot, tell us about tourism.</p>
+          <p class="todo">TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Section 02: why look more closely at Queensland next?</p>
+        </div>
+      </article>
+    </section>
+
+    <div class="strata strata--thin" aria-hidden="true"></div>
+
+    <!-- ====================================================================
+         SECTION 02 - CHANGE (sage background)
+         Queensland as the case study: how its protected areas changed in
+         area and in rank from 2008 to 2024.
+         ==================================================================== -->
+    <section class="chapter chapter--sage" id="change" aria-labelledby="change-title">
+      <header class="chapter-head">
+        <p class="chapter-kicker">Section 02</p>
+        <h2 class="chapter-title" id="change-title">Change</h2>
+        <!-- TODO: section intro. Has protected land grown or shrunk? Why zoom
+             in on Queensland (pick up from Figure 3)? -->
+        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Has the amount of protected land grown or shrunk over time? Explain why this section zooms in on Queensland, picking up where Figure 3 left off.</p>
+      </header>
+
+      <!-- ---- FIGURE 4 - vis 4: change in protected area, 2008 to 2023/24 --
+           Chart on the RIGHT (flip). vis 4 is a fixed-size chart, so it is
+           drawn as a scalable SVG (see the script below). -->
+      <article class="story-row story-row--flip">
+        <figure class="chart-card">
+          <div id="vis4"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 4</p>
+          <!-- TODO for Figure 4. Budget: heading <= 40; body 8-11 lines
+               (480-660 characters).
+               Ideas: the overall direction for national parks; the category
+               that stands out; remind readers that each panel has its own
+               hectare scale; what this could mean for the parks people can
+               actually visit. -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Has national-park area in Queensland grown or shrunk since 2008? State the overall direction and the size of the change in your own words.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which category stands out, and why? Remind the reader that each panel has its own hectare scale, so lengths compare within a panel only.</p>
+          <p class="todo">TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). What could this mean for the parks visitors can actually go to?</p>
+        </div>
+      </article>
+
+      <!-- ---- FIGURE 5 - vis 5: rank by number of protected areas -----------
+           Chart on the LEFT. -->
+      <article class="story-row">
+        <figure class="chart-card">
+          <div id="vis5"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 5</p>
+          <!-- TODO for Figure 5. Budget: heading <= 40; body 6-8 lines
+               (360-480 characters).
+               Ideas: which category climbed or fell in rank, and when; what
+               the 2014 and 2016 annotations explain; then turn from the land
+               (supply) to the people who visit it (demand). -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which category climbed or fell in rank, and when? Use the 2014 and 2016 annotations to explain the jumps the reader will see.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Section 03: protected land is the supply; now turn to the visitors.</p>
+        </div>
+      </article>
+    </section>
+
+    <div class="strata strata--thin" aria-hidden="true"></div>
+
+    <!-- ====================================================================
+         SECTION 03 - REGIONAL TOURISM (sand background)
+         Where overnight visitors go (vis 6), what each trip is worth (vis 7,
+         same ten regions, so it must sit right after vis 6), and where the
+         visitors come from (vis 11), which leads into how they travel.
+         ==================================================================== -->
+    <section class="chapter chapter--sand" id="regional" aria-labelledby="regional-title">
+      <header class="chapter-head">
+        <p class="chapter-kicker">Section 03</p>
+        <h2 class="chapter-title" id="regional-title">Regional tourism</h2>
+        <!-- TODO: section intro. Where do overnight visitors go, what is a
+             trip worth, and where do visitors come from? -->
+        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Move from land to people: where do overnight visitors go, what is each trip worth to the region, and which states do they come from?</p>
+      </header>
+
+      <!-- ---- FIGURE 6 - vis 6: overnight trips, 2023 vs 2024 ---------------
+           Chart on the RIGHT (flip). -->
+      <article class="story-row story-row--flip">
+        <figure class="chart-card">
+          <div id="vis6"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 6</p>
+          <!-- TODO for Figure 6. Budget: heading <= 40; body 8-11 lines
+               (480-660 characters).
+               Ideas: which regions draw the most trips and how far ahead they
+               are; which grew or fell from 2023 to 2024 (point to the %
+               labels); caveat that this is the top 10 of 30 regions and
+               overnight trips only (no day trips). -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which national-park regions drew the most overnight trips in 2024? Name the leaders and how far ahead they are of the rest of the top ten.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which regions grew and which fell between 2023 and 2024? Point to the % labels, and suggest a reason only if your data supports it.</p>
+          <p class="todo">TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). Caveat: top 10 of 30 regions, and overnight trips only.</p>
+        </div>
+      </article>
+
+      <!-- ---- FIGURE 7 - vis 7: spend per overnight trip vs major cities ----
+           Chart on the LEFT. -->
+      <article class="story-row">
+        <figure class="chart-card">
+          <div id="vis7"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 7</p>
+          <!-- TODO for Figure 7. Budget: heading <= 40; body 7-10 lines
+               (420-600 characters).
+               Ideas: which park regions sit above or below the cities on spend
+               per trip; why the gap might exist (ask it as a question); remind
+               readers it is regional spending only, not the whole trip. -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How does spending per trip in these park regions compare with the major cities? Which regions sit above the cities, and which sit below?</p>
+          <p class="todo">TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). Why might the gap exist? Ask it as a question, and remind readers this is regional spending only, not the full cost of a trip.</p>
+        </div>
+      </article>
+
+      <!-- ---- FIGURE 8 - vis 11: interstate overnight trips, origin to
+           destination (sankey). Chart on the RIGHT (flip). Its plot width was
+           reduced to fit the card; see the note beside its embed call. -->
+      <article class="story-row story-row--flip">
+        <figure class="chart-card">
+          <div id="vis11"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 8</p>
+          <!-- TODO for Figure 8. Budget: heading <= 40; body 7-10 lines
+               (420-600 characters).
+               Ideas: which states send and receive the most interstate trips;
+               invite the reader to hover an origin state; explain the grey
+               ribbons in plain words; end by asking how people make these
+               interstate trips (leads into flights in Section 04). -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which states send and receive the most interstate overnight trips? Invite the reader to hover an origin state, and suggest one to try first.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 2 lines (100&ndash;140 characters). Explain what the grey ribbons mean in plain words.</p>
+          <p class="todo">TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). Bridge to Section 04: interstate trips need transport, so how do visitors get there?</p>
+        </div>
+      </article>
+    </section>
+
+    <div class="strata strata--thin" aria-hidden="true"></div>
+
+    <!-- ====================================================================
+         SECTION 04 - ACCESS OVER TIME (sage background)
+         The long-term trend (vis 8, 2014-2026) and the seasons (vis 9): the
+         two halves of the topic's "long-term trends" and "seasons".
+         ==================================================================== -->
+    <section class="chapter chapter--sage" id="access" aria-labelledby="access-title">
+      <header class="chapter-head">
+        <p class="chapter-kicker">Section 04</p>
+        <h2 class="chapter-title" id="access-title">Access over time</h2>
+        <!-- TODO: section intro. How do visitors reach park regions? How has
+             that changed since 2014, and when in the year do they travel? -->
+        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). How do visitors reach park regions? Introduce both views below: how air travel has changed since 2014, and when in the year each gateway is busiest.</p>
+      </header>
+
+      <!-- ---- FIGURE 9 - vis 8: monthly passengers, top five routes ---------
+           Chart on the LEFT. Its plot width was reduced to fit the card; see
+           the note beside its embed call. -->
+      <article class="story-row">
+        <figure class="chart-card">
+          <div id="vis8"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 9</p>
+          <!-- TODO for Figure 9. Budget: heading <= 40; body 6-9 lines
+               (360-540 characters).
+               Ideas: the 12-year trend, the COVID drop and the recovery;
+               whether every route recovered the same way; tell readers they
+               can click a route in the legend to focus on it. -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How has air travel on these park-region routes changed since 2014? Describe the long-term trend, the COVID drop and the recovery in your own words.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Did every route recover the same way? Invite the reader to click a route in the legend to focus on it.</p>
+        </div>
+      </article>
+
+      <!-- ---- FIGURE 10 - vis 9: seasonality at gateway airports ------------
+           Chart on the RIGHT (flip). -->
+      <article class="story-row story-row--flip">
+        <figure class="chart-card">
+          <div id="vis9"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 10</p>
+          <!-- TODO for Figure 10. Budget: heading <= 40; body 7-10 lines
+               (420-600 characters).
+               Ideas: read along each row to find an airport's busiest months;
+               contrast the northern and southern gateways; what these seasons
+               could mean for visiting nearby parks (weather, school holidays,
+               crowds). -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which months are busiest at each gateway airport? Contrast the northern and southern gateways, and tell the reader to read along each row.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). What might these seasons mean for visiting the nearby parks, such as weather, school holidays or crowds?</p>
+        </div>
+      </article>
+    </section>
+
+    <div class="strata strata--thin" aria-hidden="true"></div>
+
+    <!-- ====================================================================
+         SECTION 05 - THE BUSINESS BASE (sand background)
+         Who serves the visitors: tourism businesses by size.
+         ==================================================================== -->
+    <section class="chapter chapter--sand" id="business" aria-labelledby="business-title">
+      <header class="chapter-head">
+        <p class="chapter-kicker">Section 05</p>
+        <h2 class="chapter-title" id="business-title">The business base</h2>
+        <!-- TODO: section intro. Who serves these visitors? -->
+        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Who serves these visitors? Introduce the tourism businesses behind the trips, and say what the reader should compare in the chart below.</p>
+      </header>
+
+      <!-- ---- FIGURE 11 - vis 10: tourism businesses by employment size -----
+           Chart on the LEFT. -->
+      <article class="story-row">
+        <figure class="chart-card">
+          <div id="vis10"></div>
+        </figure>
+        <div class="story-text">
+          <p class="fig-label">Figure 11</p>
+          <!-- TODO for Figure 11. Budget: heading <= 40; body 6-8 lines
+               (360-480 characters).
+               Ideas: compare the size bands of the two groups across the
+               middle labels; what the business mix might mean for local
+               economies that depend on park visitors. -->
+          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
+          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How do tourism businesses in park regions compare in size with those in the comparison regions? Tell the reader which bars to compare.</p>
+          <p class="todo">TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). What might this business mix mean for local economies that depend on park visitors?</p>
+        </div>
+      </article>
+    </section>
+
+    <div class="strata strata--thin" aria-hidden="true"></div>
+
+    <!-- ====================================================================
+         CONCLUSION (sage background; one centred column, no chart)
+         ==================================================================== -->
+    <section class="closing" id="conclusion" aria-labelledby="conclusion-title">
+      <div class="closing-inner">
+        <h2 class="chapter-title" id="conclusion-title">Conclusion</h2>
+        <!-- TODO: the conclusion. Budget 6-10 lines (360-600 characters).
+             Answer the topic's questions directly: visitor numbers, parks
+             compared, seasons compared, long-term trends, and how outdoor
+             tourism has changed. Then be honest about the data's limits. -->
+        <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Answer the topic in a few sentences: what did the visitor numbers show, how do parks and seasons compare, and which long-term trends stood out?</p>
+        <p class="todo">TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). How has outdoor tourism changed over time, drawing on Figures 4, 5 and 9?</p>
+        <p class="todo">TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). State the main limits of the data: which years, regions or measures are missing.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="strata" aria-hidden="true"></div>
+
+  <!-- ======================================================================
+       FOOTER - data sources and credits (style.css 13)
+       The sources are copied from each chart's own source line, grouped by
+       publisher, with the figure numbers they feed.
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h2 class="footer-title">Data sources</h2>
+        <!-- TODO: turn each source name into a link to where you downloaded
+             it, e.g. <a href="https://...">CAPAD 2024</a>. -->
+        <ul class="sources">
+          <li>CAPAD 2024 (Collaborative Australian Protected Areas Database): terrestrial and marine protected-area records; terrestrial tables, &lsquo;Jurisdiction&rsquo; sheet. Figures 1&ndash;3.</li>
+          <li>Queensland Government, indicator 1.1.0.3.1. Figures 4&ndash;5.</li>
+          <li>Tourism Research Australia, National Visitor Survey (tra-nvs-quarterly-december-2024-2023.xlsx), Tables 10 and 4. Figures 6&ndash;8.</li>
+          <li>BITRE, TopRoutesJuly2014June2026_0.xlsx, &lsquo;Top Routes&rsquo; sheet; Aviation-Airport Traffic Data-May 2026.xlsx, &lsquo;Airport Passengers&rsquo; sheet. Figures 9&ndash;10.</li>
+          <li>Tourism Research Australia, Tourism Businesses in Australia 2025, state tables, June 2024. Figure 11.</li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="footer-title">About this page</h2>
+        <p>Made by Nicholas Ong for FIT3179 Data Visualisation. Charts built with Vega-Lite.</p>
+        <!-- TODO (optional): anything else you want to credit, such as an
+             Acknowledgement of Country or the unit and semester. -->
+        <p class="todo">TODO (optional) &middot; 1&ndash;2 lines: any further credits or acknowledgements.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================================
+       THE SCRIPT - draws all 11 charts into their empty <div>s.
+       It sits at the END of <body> so every <div> it looks for already
+       exists when it runs.
+       ====================================================================== -->
   <script>
-    // Every chart is a Vega-Lite spec saved as a .json file in specs/; vegaEmbed fetches it by
-    // URL and draws it into the <div> with the matching id. The specs are fully self-contained:
-    // each one carries its own fonts, sizes and widths, so the charts do not depend on each
-    // other or on a load order. The csv/topojson each spec reads sits in data/, and every path
-    // below is relative to this page, so the whole docs/ folder can be moved or hosted as is.
+    // In JavaScript, "//" starts a comment that runs to the end of the line.
+    //
+    // Every chart is a Vega-Lite spec saved as a .json file in specs/.
+    // vegaEmbed(target, specUrl, options) downloads the spec from that URL,
+    // reads the data files the spec names (in data/), and draws the chart
+    // inside the element that matches the target ("#map1" = id="map1").
+    // Every path is relative to this page, so the whole docs/ folder can be
+    // moved or hosted as it is.
+
+    // Options shared by every chart. "const" makes a name that is never
+    // reassigned. actions: false hides the "..." menu (export / view source)
+    // that Vega-Embed otherwise adds to each chart's corner.
     const EMBED_OPTIONS = { actions: false };
 
+    // Options for the eight fixed-size charts (vis 4 to vis 11).
+    // "...EMBED_OPTIONS" copies everything in EMBED_OPTIONS, then
+    // renderer: "svg" is added. Vega can draw a chart as a CANVAS (a grid of
+    // pixels) or as an SVG (a set of shapes). The two look the same, but:
+    //   - an SVG can be scaled like an image (style.css 8), so on a window
+    //     narrower than the chart it shrinks to fit instead of making the
+    //     page scroll sideways;
+    //   - when an SVG is scaled, hovering and clicking still hit the right
+    //     mark, because the browser itself works out what is under the mouse.
+    //     A scaled canvas would aim hover tooltips at the wrong place.
+    // This changes HOW a chart is drawn, never WHAT is drawn: the specs are
+    // untouched, and restoreBlankLines() (further down) fixes the one place
+    // where SVG would otherwise differ from canvas. The maps keep the default
+    // canvas: they are sized by their boxes (style.css 11) and never need
+    // scaling.
+    const FIXED_CHART_OPTIONS = { ...EMBED_OPTIONS, renderer: "svg" };
+
+    // ---- Maps 1 and 2 ---------------------------------------------------
+    // Drawn into their boxes; the specs say width/height "container", so the
+    // maps fill whatever size style.css gives the box.
     vegaEmbed("#map1", "specs/map1-proportional-symbols.json", EMBED_OPTIONS);
     vegaEmbed("#map2", "specs/map2-choropleth.json", EMBED_OPTIONS);
 
-    // Map 3 is four copies of one panel spec, one per governance category. Its heading, subtitle
-    // and shared colour key are plain HTML built from the spec file: the text sits in the file's
-    // "usermeta" block, and the key reads the colour scale of the first layer, so the swatches
-    // can never drift from the colours the panels draw.
+    // ---- Map 3 ----------------------------------------------------------
+    // Map 3 is four copies of one panel spec, one per governance category.
+    // Its heading, subtitle and shared colour key are plain HTML built from
+    // the spec file: the text sits in the file's "usermeta" block, and the
+    // key reads the colour scale of the first layer, so the swatches can
+    // never drift from the colours the panels draw.
+    //
+    // "async function" = a function that can pause with "await" while files
+    // download, then carry on when they arrive.
     async function embedMap3(selector, specUrl) {
+      // Find the empty <div id="map3">; stop with a clear error if missing.
       const container = document.querySelector(selector);
       if (!container) throw new Error(`Map 3 container not found: ${selector}`);
+
+      // A small helper: download a URL and read it as JSON. "fetch" asks the
+      // server for the file; response.ok is false for errors such as 404.
       const getJson = async url => {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Could not load ${url}: ${response.status}`);
         return response.json();
       };
+
+      // Download the spec. This line "destructures" it: the usermeta block
+      // goes into "meta", and everything else becomes "panelSpec".
       const { usermeta: meta, ...panelSpec } = await getJson(specUrl);
-      // Fetch once; all panels reuse these small datasets.
+      // Fetch once; all panels reuse these small datasets. Promise.all
+      // downloads both files at the same time and waits for both.
       const [bins, boundaries] = await Promise.all([meta.binsUrl, meta.basemapUrl].map(getJson));
+      // The colour scale of the first layer: the band names and their colours.
       const { domain: bands, range: colours } = panelSpec.layer[0].encoding.color.scale;
+
+      // Empty the <div> and give it the class that style.css 12 styles.
       container.replaceChildren();
       container.classList.add("map3-comparison");
+
+      // The heading, subtitle and source line, as HTML elements.
+      // createElement makes a new element; textContent sets its text.
       const title = document.createElement("h2");
       title.textContent = meta.title;
       const subtitle = document.createElement("p");
       subtitle.textContent = meta.subtitle;
       const source = document.createElement("p");
       source.textContent = meta.source;
-      container.append(title, subtitle, source);
+      container.append(title, subtitle, source);   // add them, in this order
 
-      // Every band is one segment of a single continuous strip, zero included.
+      // The shared colour key. Every band is one segment of a single
+      // continuous strip, zero included.
       const legend = document.createElement("div");
       legend.className = "map3-legend";
       const legendTitle = document.createElement("strong");
@@ -179,13 +598,15 @@
       legend.append(legendTitle);
       const ramp = document.createElement("div");
       ramp.className = "map3-ramp";
+      // forEach runs the code once per band; i is its position (0, 1, 2...),
+      // so colours[i] is that band's colour.
       bands.forEach((band, i) => {
         const step = document.createElement("div");
         step.className = "map3-ramp-step";
         const swatch = document.createElement("span");
         swatch.className = "map3-ramp-swatch";
         swatch.style.backgroundColor = colours[i];
-        swatch.setAttribute("aria-hidden", "true");
+        swatch.setAttribute("aria-hidden", "true");  // decoration: screen readers skip it
         const label = document.createElement("span");
         label.className = "map3-ramp-label";
         label.textContent = band;
@@ -195,17 +616,23 @@
       legend.append(ramp);
       container.append(legend);
 
+      // The grid that holds the four panels (2 x 2, see style.css 12).
       const grid = document.createElement("div");
       grid.className = "map3-panels";
       container.append(grid);
-      // Derive panels from all observed source codes; nothing is grouped into "other".
-      // meta.panelOrder puts the highest counts first, so the two panels that carry the finding
-      // land at the top of the grid; any code not listed there follows after.
+
+      // Derive panels from all observed source codes; nothing is grouped into
+      // "other". meta.panelOrder puts the highest counts first, so the two
+      // panels that carry the finding land at the top of the grid; any code
+      // not listed there follows after.
       const codes = bins.metadata.governance_codes;
       const orderedCodes = [...meta.panelOrder.filter(code => codes.includes(code)),
         ...codes.filter(code => !meta.panelOrder.includes(code))];
+
+      // Build one panel per code: a heading plus an empty chart box. "map"
+      // turns the list of codes into a list of { chart, cells } pairs.
       const panels = orderedCodes.map(code => {
-        const governance = meta.governanceNames[code] || code;
+        const governance = meta.governanceNames[code] || code;   // "G" -> "Government"
         const panel = document.createElement("section");
         const heading = document.createElement("h3");
         heading.textContent = governance;
@@ -214,46 +641,92 @@
         chart.setAttribute("aria-label", `${governance} protected-area location counts`);
         panel.append(heading, chart);
         grid.append(panel);
+        // This panel's data: every grid cell, with the count for this category.
         const cells = bins.features.map(feature => ({
           ...feature, governance, count: feature.properties.governance_counts[code] || 0
         }));
         return { chart, cells };
       });
+
+      // Draw all panels. Instead of a URL, each call gets the spec object
+      // itself, with this panel's data plugged in as named datasets.
       return Promise.all(panels.map(({ chart, cells }) =>
         vegaEmbed(chart, { ...panelSpec, datasets: { cells, boundaries } }, EMBED_OPTIONS)
       ));
     }
 
+    // Run it. ".catch" handles any failure: log the real error for you in the
+    // browser console (F12), and show readers a message instead of a gap.
     embedMap3("#map3", "specs/map3-bin.json").catch(error => {
       console.error(error);
       document.querySelector("#map3").textContent = "Map 3 could not load. Please refresh and check the data files.";
     });
 
-    // Vis 4-11 are embedded the same way as the maps, through one small helper that adds an
-    // error message. Each chart loads a csv over the network, so it can fail in ways the maps
-    // can: a typo in the path, or opening index.html with file:// instead of through a local web
-    // server (the browser blocks the fetch). Catching it puts a readable message in the page
-    // instead of leaving a silent blank gap, and still logs the real error to the console.
-    // The third argument is the file that chart needs, so the message names the ONE file to
-    // check. vis 4 and vis 5 come from scripts/prepare_vis45.py; vis 6 and vis 7 from
-    // prepare_vis67.py; vis 8 and vis 9 from prepare_vis89.py.
+    // ---- Vis 4 to vis 11 ---------------------------------------------------
+    // Embedded the same way as the maps, through one small helper that adds
+    // an error message. Each chart loads a csv over the network, so it can
+    // fail: a typo in the path, or opening index.html straight from disk
+    // (file://) instead of through a local web server, which makes the
+    // browser block the download. Catching the error puts a readable message
+    // in the page instead of a silent blank card, and still logs the real
+    // error to the console. The third argument names the ONE data file that
+    // chart needs, and the script in scripts/ that makes it.
+    //
+    // ".then" runs once the chart has been drawn; ".catch" runs if anything
+    // failed along the way.
     function embedChart(selector, specUrl, dataFile) {
-      vegaEmbed(selector, specUrl, EMBED_OPTIONS).catch(error => {
-        console.error(selector, error);
-        document.querySelector(selector).textContent =
-          "This chart could not load. Run it from a local web server and check that " +
-          specUrl + " and " + dataFile + " exist.";
+      vegaEmbed(selector, specUrl, FIXED_CHART_OPTIONS)
+        .then(() => restoreBlankLines(document.querySelector(selector)))
+        .catch(error => {
+          console.error(selector, error);
+          document.querySelector(selector).textContent =
+            "This chart could not load. Run it from a local web server and check that " +
+            specUrl + " and " + dataFile + " exist.";
+        });
+    }
+
+    // Keeps the SVG charts looking exactly like the canvas originals.
+    // Each subtitle has a blank line (" ") before its "Source:" line. When Vega
+    // draws SVG, it trims every line, so that blank line becomes an EMPTY
+    // <tspan> (one line of SVG text). The browser skips a text line with no
+    // characters, including its "move down one line" step, so the gap above
+    // "Source:" would vanish. Putting a non-breaking space (an invisible
+    // character, written " ") into each empty line brings the gap back.
+    // Checked by screenshot: with this fix, every SVG chart matches its canvas
+    // version pixel for pixel, apart from anti-aliasing on a few edges.
+    // Vega only rebuilds these lines when their text changes, so hovering or
+    // clicking never undoes the fix.
+    function restoreBlankLines(chartElement) {
+      chartElement.querySelectorAll("tspan").forEach(line => {
+        if (line.textContent === "") line.textContent = " ";
       });
     }
 
+    // Listed in story order (Figure 4 to Figure 11), not file-number order.
     embedChart("#vis4", "specs/vis4-connecteddot.json", "data/qld_area_change.csv (run prepare_vis45.py)");
     embedChart("#vis5", "specs/vis5-bump.json", "data/qld_rank_series.csv (run prepare_vis45.py)");
     embedChart("#vis6", "specs/vis6-bar.json", "data/np_trips_pairs.csv (run prepare_vis67.py)");
     embedChart("#vis7", "specs/vis7-lolipop.json", "data/np_exp_per_trip.csv (run prepare_vis67.py)");
+
+    // vis 11 (Figure 8): SIZE CHANGE for this layout. Its plot "width" went
+    // from 520 to 370 so the whole chart (~865px) fits inside a card next to
+    // the story text. Nothing else about the chart changed. Its right-hand
+    // labels are placed in pixels measured from the plot's left edge, so they
+    // moved left by the same 150px to stay attached to the destination bars:
+    //   destination names   x 528 -> 378   (= width + 8)
+    //   destination totals  x 748 -> 598   (= width + 228)
+    //   "Overnight destination" header  x 528 -> 378
+    // The left-hand labels (x -250 and -8) do not depend on the width.
+    // To restore the old size, put all four numbers back.
+    embedChart("#vis11", "specs/vis11-sankey.json", "data/np_trip_flows_links.csv and _nodes.csv (run prepare_vis11.py)");
+
+    // vis 8 (Figure 9): SIZE CHANGE for this layout. Its plot "width" went from
+    // 714 to 650, so the chart is ~856px wide instead of 920px. Every mark is
+    // placed by the time scale, and the legend's position depends on the
+    // height, not the width, so nothing else needed to move.
     embedChart("#vis8", "specs/vis8-line.json", "data/np_route_monthly.csv (run prepare_vis89.py)");
     embedChart("#vis9", "specs/vis9-heatmap.json", "data/np_gateway_seasonality.csv (run prepare_vis89.py)");
     embedChart("#vis10", "specs/vis10-butterfly.json", "data/np_business_size.csv (run prepare_vis10.py)");
-    embedChart("#vis11", "specs/vis11-sankey.json", "data/np_trip_flows_links.csv and _nodes.csv (run prepare_vis11.py)");
   </script>
 </body>
 </html>

@@ -1,0 +1,730 @@
+/* ==========================================================================
+   style.css - the look of the "Australian National Parks Tourism" story
+   ==========================================================================
+
+   index.html holds the CONTENT (the story text and the empty boxes the charts
+   are drawn into). This file holds the PRESENTATION (colours, fonts, spacing
+   and the left/right zig-zag). Keeping them apart means you can rewrite the
+   story without touching the layout, and restyle the page without touching
+   the story.
+
+   How to read CSS - every rule has the shape
+        selector { property: value; property: value; }
+     - The SELECTOR picks which elements the rule applies to:
+          .name      every element with class="name"
+          #name      the one element with id="name"
+          a b        any b that sits anywhere inside an a
+          a > b      a b that is a DIRECT child of a (one level down only)
+          a + b      a b that comes immediately after an a (same parent)
+     - When two rules set the same property on the same element, the more
+       SPECIFIC selector wins (id beats class beats plain element name); if
+       they are equally specific, the one LATER in this file wins.
+     - Text between slash-star and star-slash is a comment: the browser
+       ignores it.
+
+   CONTENTS
+      1. Design tokens .......... every colour, font and key size, in one place
+      2. Page basics ............ box sizing, body text, links
+      3. Strata divider ......... the banded "rock layers" line between parts
+      4. Hero ................... the dark page header with the title
+      5. Shared content width ... keeps headings lined up with the charts
+      6. Sections ............... introduction, the five chapters, conclusion
+      7. Story rows ............. the chart / text zig-zag (the core layout)
+      8. Chart cards ............ the white boxes the charts sit in
+      9. Story text ............. figure label, claim heading, paragraphs
+     10. TODO placeholders ...... the dashed boxes you replace with your text
+     11. Maps 1 and 2 ........... sizing the maps to the window
+     12. Map 3 .................. heading, colour key and the 2 x 2 panels
+     13. Footer ................. data sources and credits
+     14. Small screens .......... phone-sized adjustments
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ==========================================================================
+   ":root" means the <html> element, the top of the page. Properties whose
+   names start with "--" are CUSTOM PROPERTIES (CSS variables): they store a
+   value, and any rule further down reads it back with var(--name). Defining
+   every colour and key size here means one edit updates the whole page.     */
+:root {
+  /* This page is designed for a light background only. Saying so stops
+     "automatic dark mode" browser features from inverting it: the charts are
+     painted on white by Vega, so a darkened page would leave glaring white
+     boxes. */
+  color-scheme: light;
+
+  /* ---- Colours: desert sand + eucalypt forest ---------------------------
+     The pale sand and sage backgrounds are the desert floor and the forest
+     canopy. The deep forest green frames the page top and bottom, and red
+     ochre is the small accent, like the colour of the Red Centre.
+     The ratio after each text colour is its WCAG contrast ratio against the
+     background it sits on (measured, not guessed). 4.5 : 1 is the minimum for
+     body text, and every text colour here clears it.                       */
+  --sand-50:    #F6EFE2;  /* pale desert sand: page and sections 01, 03, 05  */
+  --sage-50:    #E9EDE0;  /* pale eucalypt sage: intro, sections 02 and 04,
+                             conclusion. Alternating sand / sage marks where
+                             one part of the story ends and the next begins. */
+  --forest-900: #1E3226;  /* deep forest: hero and footer backgrounds        */
+  --forest-700: #2E4B37;  /* forest: section titles, links (8.4:1 on sand)   */
+  --olive-500:  #7A8450;  /* olive scrub: one band of the strata divider     */
+  --clay-300:   #DCCBAE;  /* dry clay: card borders and divider lines        */
+  --ochre-600:  #9C4A22;  /* red ochre: small labels (5.4:1 sand, 5.2 sage)  */
+  --ochre-300:  #E0A36B;  /* light ochre: accents on dark green (6.2:1)      */
+  --sand-200:   #DDD2BE;  /* muted sand: quieter text on dark green (9.1:1)  */
+  --ink-900:    #29261F;  /* warm near-black: body text (13.2:1 on sand,
+                             12.7:1 on sage). Softer than pure black.        */
+  --ink-600:    #5A5245;  /* warm grey-brown: secondary text (6.7:1 on sand) */
+  --card:       #FFFFFF;  /* chart cards. This MUST stay pure white: Vega
+                             paints every chart on a white rectangle, so any
+                             other shade would show a seam around each chart. */
+
+  /* ---- Fonts ---------------------------------------------------------------
+     Only fonts already installed on readers' devices are used, so nothing has
+     to download and every browser shows the page the same way. Each value is
+     a FONT STACK: a list of fallbacks, and the browser uses the first one it
+     has installed.
+       serif - Georgia ships with Windows, macOS and iOS and was designed for
+               screens, with a large x-height (tall lower-case letters), so
+               headings stay crisp. Times / the browser's own serif is the
+               fallback anywhere else.
+       sans  - system-ui is the operating system's own interface font (Segoe
+               UI on Windows, San Francisco on Mac). It comes first because
+               every chart uses "system-ui, sans-serif", so the story text and
+               the chart text read as one family. Arial is the last resort.
+     The rule for this page: serif = the story's voice (titles and headings);
+     sans = the data's voice (charts) and the reading text.                  */
+  --font-serif: Georgia, "Times New Roman", Times, serif;
+  --font-sans:  system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* ---- Layout sizes --------------------------------------------------------
+     --chart-w  The inside width of every chart card. The widest chart, vis 4,
+                measures 857px, and it cannot get narrower because its longest
+                subtitle line does not wrap. 880px = vis 4 plus headroom for
+                Mac's San Francisco font, which runs a little wider than
+                Windows' Segoe UI. vis 8 (now ~856px) and vis 11 (now ~865px)
+                had their plot widths reduced to fit inside this.
+     --card-pad White space between the card's edge and the chart.
+     --card-w   The card's full outside width: 880 chart + 2 x 20 padding +
+                2 x 1px border = 922px. calc() does arithmetic, and can mix
+                units (px, em, rem, %) because it is worked out on screen.   */
+  --chart-w:  880px;
+  --card-pad: 20px;
+  --card-w:   calc(var(--chart-w) + 2 * var(--card-pad) + 2px);
+
+  /* --text-max The widest a column of reading text may get: ~60 characters
+                per line, the readability limit. Measured in Chrome with 16px
+                Segoe UI: at 26em, ordinary prose already reached 61
+                characters on its longest lines; at 25em (400px) the longest
+                lines are about 58-59. "em" means "times the current font
+                size", so 25em stays under 60 characters even where the font
+                is bigger (the 18px section intros).
+     --text-min The narrowest the text column may get beside a chart (320px
+                = ~45 characters). Below that, the chart and text stack.     */
+  --text-max: 25em;
+  --text-min: 20em;
+
+  --col-gap: 3rem;  /* space between a chart and its text. "rem" = times the
+                       ROOT font size (16px), so 3rem = 48px everywhere.     */
+  --gutter:  24px;  /* minimum space between content and the window edge    */
+
+  /* --page-max  The widest the content ever gets: card + gap + the full text
+                 column = 922 + 48 + 400 = 1370px.
+     --content-w The width that headings line up to. When charts stack in one
+                 column it is just the card width; section 7 switches it to
+                 --page-max on wide screens, so a section's heading always
+                 starts at the same left edge as the first chart under it.   */
+  --page-max:  calc(var(--card-w) + var(--col-gap) + var(--text-max));
+  --content-w: var(--card-w);
+}
+
+
+/* ==========================================================================
+   2. PAGE BASICS
+   ========================================================================== */
+
+/* By default an element's width does NOT include its padding and border, so
+   "width: 922px" plus 20px padding would really take up 962px. "border-box"
+   makes width include them, which keeps all the arithmetic above honest.
+   "*" matches every element; ::before and ::after are the invisible extra
+   boxes CSS can attach to an element. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* A @media block applies its rules only when its condition is true. Here:
+   smooth-scroll when a roadmap link is clicked, but only for readers who have
+   NOT asked their device to reduce motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;                       /* browsers add an 8px margin by default  */
+  background: var(--sand-50);      /* the desert-sand page                   */
+  color: var(--ink-900);
+  font-family: var(--font-sans);
+  font-size: 12pt;                 /* = 16px. 11-12pt is the legible size for
+                                      reading on screens.                    */
+  line-height: 1.6;                /* 1.6 x 16px = 25.6px from one line to the
+                                      next: room for the eye to find the start
+                                      of the next line.                      */
+}
+
+a {
+  color: var(--forest-700);
+  text-underline-offset: 0.15em;   /* lift the underline off the letters     */
+}
+a:hover {                          /* ":hover" = while the mouse is over it  */
+  color: var(--ochre-600);
+}
+
+
+/* ==========================================================================
+   3. STRATA DIVIDER
+   ==========================================================================
+   A thin banded line, like layers of rock in a cliff face. It sits under the
+   hero, between every part of the story, and above the footer.
+   A linear-gradient normally blends colours smoothly. Giving each colour a
+   start AND an end position ("0 3px", "3px 6px") makes hard edges instead,
+   so the result is crisp stripes. "to bottom" stacks them top to bottom.    */
+.strata {
+  height: 12px;
+  background: linear-gradient(to bottom,
+    var(--forest-700) 0 3px,
+    var(--olive-500)  3px 6px,
+    var(--clay-300)   6px 9px,
+    var(--ochre-600)  9px 12px);
+}
+/* The between-sections version: three 2px bands. Whole-pixel bands stay sharp
+   on screen, where half-pixel bands would blur. */
+.strata--thin {
+  height: 6px;
+  background: linear-gradient(to bottom,
+    var(--olive-500) 0 2px,
+    var(--clay-300)  2px 4px,
+    var(--ochre-600) 4px 6px);
+}
+
+
+/* ==========================================================================
+   4. HERO - the dark header with the page title
+   ========================================================================== */
+.hero {
+  background: var(--forest-900);
+  color: var(--sand-50);           /* 11.9:1 on the deep forest green        */
+  padding: 5.5rem var(--gutter) 4rem;  /* top, left-and-right, bottom        */
+}
+
+/* The small line above the title. 11pt is this page's smallest text size;
+   capitals plus letter-spacing make it read as a label, not a sentence. */
+.hero-kicker {
+  margin: 0 0 1rem;
+  font-size: 11pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ochre-300);
+}
+
+/* The page title: the top of the visual hierarchy, so it is the biggest text.
+   clamp(MIN, PREFERRED, MAX) picks the preferred size but never goes outside
+   the limits. "vw" = 1% of the window width, so the title grows with the
+   window, from 40px on a phone up to 60px on a large screen. */
+.hero-title {
+  margin: 0 0 1.25rem;
+  max-width: 18em;                 /* keeps a long title to about two lines  */
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 4.5vw, 3.75rem);
+  line-height: 1.1;                /* big type needs less space between lines */
+}
+
+.byline {
+  margin: 0;
+  font-size: 11pt;
+  color: var(--sand-200);          /* quieter than the title (9.1:1)         */
+}
+
+
+/* ==========================================================================
+   5. SHARED CONTENT WIDTH
+   ==========================================================================
+   These blocks never get wider than --content-w. "margin-inline: auto" splits
+   the leftover space equally on the left and right, which centres the block.
+   Because the story rows are centred the same way, every heading starts at
+   the same left edge as the first chart below it. */
+.hero-inner,
+.chapter-head,
+.footer-inner {
+  max-width: var(--content-w);
+  margin-inline: auto;
+}
+
+/* The introduction and conclusion have no chart, so they are one centred
+   reading column of ~60 characters, like the opening of an essay. */
+.intro-inner,
+.closing-inner {
+  max-width: var(--text-max);
+  margin-inline: auto;
+}
+
+
+/* ==========================================================================
+   6. SECTIONS - introduction, the five chapters, conclusion
+   ========================================================================== */
+.intro,
+.chapter,
+.closing {
+  padding: 6rem var(--gutter);     /* generous space above and below each part */
+}
+
+/* Alternating backgrounds: intro (sage), 01 (sand), 02 (sage), 03 (sand),
+   04 (sage), 05 (sand), conclusion (sage). The class in index.html chooses. */
+.intro,
+.closing,
+.chapter--sage { background: var(--sage-50); }
+.chapter--sand { background: var(--sand-50); }
+
+.chapter-head {
+  margin-bottom: 4rem;             /* separates the heading from the first chart */
+}
+
+/* "Section 01" above each section title: a label in the ochre accent. */
+.chapter-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 11pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ochre-600);
+}
+
+/* Section titles: the second level of the hierarchy (serif, bold, forest).
+   This is a CLASS, not a plain "h2" rule, on purpose: map 3 draws its own
+   chart title as an <h2>, and that one must stay a sans-serif chart title. */
+.chapter-title {
+  margin: 0 0 1rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 2.25rem;              /* 36px = 27pt */
+  line-height: 1.15;
+  color: var(--forest-700);
+}
+
+/* The short paragraph under each section title, a step larger than the body
+   text so it reads as a lead-in. 25em at 18px is still under 60 characters. */
+.chapter-intro {
+  margin: 0;
+  max-width: var(--text-max);
+  font-size: 13.5pt;               /* = 18px */
+}
+
+/* The first paragraph of the introduction gets the same lead-in size. */
+.intro-lede {
+  font-size: 13.5pt;
+}
+
+.intro-inner p,
+.closing-inner p {
+  margin: 0 0 1em;
+}
+
+/* ---- The roadmap: the numbered list of sections in the introduction ---- */
+.roadmap {
+  list-style: none;                /* hide the browser's own 1. 2. 3. numbers */
+  margin: 1.25rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--clay-300);
+}
+.roadmap li {
+  border-bottom: 1px solid var(--clay-300);
+}
+/* Each whole row is a link. "display: flex" lines its children up in a row;
+   "align-items: baseline" sits the small number and the big name on the same
+   text baseline; "gap" is the space between them. */
+.roadmap a {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  color: var(--ink-900);
+  text-decoration: none;           /* no underline until hover (next rule)   */
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+}
+.roadmap a:hover .roadmap-name {
+  text-decoration: underline;
+}
+.roadmap-num {
+  font-family: var(--font-sans);
+  font-size: 11pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ochre-600);
+}
+
+
+/* ==========================================================================
+   7. STORY ROWS - the chart / text zig-zag
+   ==========================================================================
+   Each <article class="story-row"> holds one chart card and its story text.
+
+   NARROW AND MEDIUM SCREENS (the default, written first): the chart sits on
+   top and its text underneath, in a single column no wider than one card.
+   "display: grid" with no columns given simply stacks the children, and
+   "gap" puts 2rem of space between them. */
+.story-row {
+  display: grid;
+  gap: 2rem;
+  max-width: var(--card-w);
+  margin-inline: auto;             /* centre the column in the window        */
+}
+/* "a + b": every story row that directly follows another story row gets space
+   above it. The first row in a section needs none: the heading has its own. */
+.story-row + .story-row {
+  margin-top: 5rem;
+}
+
+/* WIDE SCREENS: chart and text side by side, alternating sides.
+   Where 1360px comes from: card 922 + gap 48 + narrowest text 320 + two
+   gutters 48 = 1338px, plus ~17px for the window's vertical scrollbar (media
+   queries measure the window INCLUDING the scrollbar) = 1355, rounded up.
+   1366px laptops therefore get the side-by-side layout too. */
+@media (min-width: 1360px) {
+  :root {
+    --content-w: var(--page-max);  /* headings now span chart + text         */
+  }
+
+  /* grid-template-columns lists the column widths, left to right:
+       column 1 = exactly one card wide;
+       column 2 = minmax(MIN, MAX): as wide as there is room for, between
+                  20em (~45 characters) and 25em (~60 characters).
+     "justify-content: center" centres the pair in the window.
+     "align-items: start" pins both to the top of the row, so the text's
+     first line sits level with the chart's title instead of floating in the
+     middle of a tall chart. */
+  .story-row {
+    max-width: none;
+    grid-template-columns: var(--card-w) minmax(var(--text-min), var(--text-max));
+    column-gap: var(--col-gap);
+    justify-content: center;
+    align-items: start;
+  }
+
+  /* The mirror image for every second row: text column first, card second.
+     In index.html the chart ALWAYS comes before its text (so the stacked
+     layout above reads the same on every row); these rules only move them on
+     screen. grid-column / grid-row say which cell of the grid each one takes. */
+  .story-row--flip {
+    grid-template-columns: minmax(var(--text-min), var(--text-max)) var(--card-w);
+  }
+  .story-row--flip > .chart-card { grid-column: 2; grid-row: 1; }
+  .story-row--flip > .story-text { grid-column: 1; grid-row: 1; }
+
+  /* Drop the text by the card's padding so the figure label lines up with
+     the top of the chart's title inside the card. */
+  .story-text {
+    padding-top: var(--card-pad);
+  }
+}
+
+
+/* ==========================================================================
+   8. CHART CARDS - the white boxes the charts sit in
+   ==========================================================================
+   Every chart sits on a white card: the white matches Vega's own white chart
+   background, so the chart and card merge into one clean surface. White on
+   sand is a very low contrast (1.14:1), so the border and the soft shadow are
+   what give the card a visible edge. */
+.chart-card {
+  margin: 0;                       /* <figure> has 40px side margins by default */
+  min-width: 0;                    /* a grid item normally refuses to shrink
+                                      below its content's width; 0 lets the
+                                      card shrink on small screens so the
+                                      chart inside can scale down instead of
+                                      pushing the page sideways.            */
+  padding: var(--card-pad);
+  background: var(--card);
+  border: 1px solid var(--clay-300);
+  border-radius: 10px;             /* softly rounded corners                 */
+  /* Two shadows, separated by a comma: a tight one for a crisp edge and a
+     wide, faint, warm-brown one underneath, as if lifted off the sand.
+     rgb(R G B / alpha): alpha 0 = invisible, 1 = solid. */
+  box-shadow:
+    0 1px 2px rgb(60 40 20 / 0.06),
+    0 12px 28px -14px rgb(60 40 20 / 0.30);
+
+  /* Flexbox, column direction: children stack top to bottom, and
+     "align-items: center" centres each one horizontally. A chart narrower
+     than 880px (vis 6 is 787px) therefore sits in the middle of its card. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Protect the visualisations from the page's own styles. Map 3's heading,
+     subtitle and key are HTML rather than drawn by Vega, so they would
+     otherwise inherit the story's colours and line spacing. These three
+     values restore exactly what they had before the redesign: the charts'
+     own font, black text and the browser's normal line spacing. */
+  font-family: system-ui, sans-serif;
+  color: #000;
+  line-height: normal;
+}
+
+/* Map 3 is a block of HTML (title, key, panel grid), not a single drawing, so
+   it should fill the whole card instead of shrinking to fit and centring.
+   "align-self" overrides the card's "align-items: center" for this one child. */
+.chart-card > .chart-stretch {
+  align-self: stretch;
+}
+
+/* NO HORIZONTAL SCROLLING. vis 4 to vis 11 have fixed pixel widths (up to
+   ~865px). They are drawn as SVG (see index.html), and an SVG has a built-in
+   "viewBox" that lets it scale like an image. These two rules say: never be
+   wider than the card; if the card is narrower than the chart (windows under
+   ~970px wide), shrink the whole chart proportionally ("height: auto" keeps
+   its shape). On normal screens the card is wide enough and nothing scales.
+   "display: block" removes the few pixels of space browsers leave under
+   inline images and SVGs. */
+.chart-card .vega-embed {
+  max-width: 100%;
+}
+.chart-card .vega-embed svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* The hover tooltips Vega shows are added at the end of the page, outside the
+   cards, so they would inherit the page's 1.6 line spacing. This restores
+   their original spacing. */
+#vg-tooltip-element {
+  line-height: normal;
+}
+
+
+/* ==========================================================================
+   9. STORY TEXT - the explanation beside each chart
+   ========================================================================== */
+.story-text {
+  min-width: 0;                    /* allow the column to shrink (see 8)     */
+  max-width: var(--text-max);      /* never more than ~60 characters a line  */
+}
+
+/* "Figure 4": a small label tying the text to its chart, which matters most
+   when the text sits on the left and the chart on the right. */
+.fig-label {
+  margin: 0 0 0.5rem;
+  font-size: 11pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ochre-600);
+}
+
+/* The one-line claim above each explanation: the third level of the
+   hierarchy. Serif like the section titles, but regular weight and smaller,
+   so it is clearly below them. At 24px it is still larger than the 18px chart
+   titles, so the story leads and the chart supports it. Like .chapter-title,
+   this is scoped to .story-text so map 3's <h3> panel names are untouched. */
+.story-text h3 {
+  margin: 0 0 1rem;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.5rem;               /* 24px = 18pt */
+  line-height: 1.3;
+  color: var(--ink-900);
+}
+
+.story-text p {
+  margin: 0 0 1em;                 /* one blank line's worth between paragraphs */
+}
+/* ":last-child" = only the final paragraph: no extra space under it. */
+.story-text p:last-child {
+  margin-bottom: 0;
+}
+
+
+/* ==========================================================================
+   10. TODO PLACEHOLDERS
+   ==========================================================================
+   Every piece of story text you still have to write carries class="todo".
+   It is drawn as a dashed ochre box in italic so nothing unfinished can be
+   missed. Each placeholder is roughly as long as the text it stands for, so
+   the page already shows the real layout. When you replace a placeholder
+   with your own words, delete class="todo" from that element (or delete this
+   whole rule once everything is written). */
+.todo {
+  outline: 2px dashed var(--ochre-600);
+  outline-offset: 4px;             /* outline sits 4px outside the text      */
+  background: rgb(156 74 34 / 0.06);
+  color: var(--ink-600);
+  font-style: italic;
+}
+/* On the dark hero and footer, dark text would vanish: use light colours. */
+.hero .todo,
+.site-footer .todo {
+  outline-color: var(--ochre-300);
+  background: rgb(224 163 107 / 0.12);
+  color: inherit;                  /* "inherit" = use the parent's colour   */
+}
+
+
+/* ==========================================================================
+   11. MAPS 1 AND 2 - sized to the card AND to the window height
+   ==========================================================================
+   "container" sizing in the map specs means: fill this box. The box needs
+   BOTH a width and a height, or the map collapses.
+
+   Australia measures 1.043 times wider than tall in the projection all three
+   maps use, so the MAP part of a box wants: height = width x 0.959. The specs
+   use autosize "fit", which lays the title out INSIDE the box, so the box
+   itself needs that map height PLUS room for the title block. aspect-ratio
+   keeps the whole thing in proportion as the window narrows, which a fixed
+   height cannot do.
+
+   These two ratios were measured, not guessed: they are the shortest boxes at
+   which each map stops growing. A taller box is pure white space, because
+   both maps are limited by their WIDTH, not their height.
+     .map-box  1100 x 1105 -> Australia 1086 x 1042 px
+     #map2     1100 x 1025 -> Australia  986 x  946 px
+   Map 2 comes out ~9% smaller than map 1 because its ACT call-out label sits
+   east of the coast: "fit" shrinks the projection to keep that text inside
+   the frame. Re-measure both if a spec's type sizes change: a bigger title
+   eats into the map.
+
+   The width is the smallest of:
+     - 100%: the inside of the card (880px at most);
+     - enough that the whole map fits in the window's height without
+       scrolling. "vh" = 1% of the window height, so (100vh - 2rem of breathing
+       room - the card's top and bottom padding) / --map-ratio is the widest
+       box whose height still fits. It never goes below 600px, so the type
+       and symbols stay readable on short windows.
+   min() and max() pick the smallest / largest of their values.             */
+.map-box {
+  --map-ratio: 1.005;              /* box height / box width for map 1       */
+  /* Fill the whole card (880px). An earlier version also capped the width by
+     the window HEIGHT, but on short windows that made the box ~690px, and
+     Vega's "fit" sizing then CUT OFF the map titles (map 2's is 683px wide):
+     autosize "fit" never wraps or shrinks a title, it just clips it. */
+  width: 100%;
+  aspect-ratio: 1 / var(--map-ratio);
+}
+/* A custom property set on one element overrides the value inherited from
+   above, so map 2 reuses the rule above with its own ratio. */
+#map2 { --map-ratio: 0.932; }
+
+
+/* ==========================================================================
+   12. MAP 3 - four small maps, one per governance category
+   ==========================================================================
+   Each small multiple has its own container-sized Vega-Lite view.
+
+   Map 3's heading, subtitle and key are plain HTML (built by embedMap3() in
+   index.html), while maps 1 and 2 draw theirs inside the chart. These sizes
+   therefore have to be kept level with config.title and config.legend in
+   specs/map1-proportional-symbols.json by hand, or the three maps stop
+   looking like one set. Sizes are in px, not rem, so they match the chart
+   text exactly whatever the root size. */
+
+/* Was "margin-bottom: 2rem" when the maps sat straight on the page; inside a
+   card, the card's padding already provides the space. */
+.map3-comparison { margin-bottom: 0; }
+.map3-comparison h2 { margin: 0 0 .3rem; font-size: 18px; font-weight: 600; }  /* = chart title    */
+.map3-comparison > p { margin: 0 0 .9rem; font-size: 13px; color: #555; }      /* = chart subtitle */
+
+/* Shared key for all four panels. A smaller bottom margin than top binds it
+   to the panels it explains rather than to the subtitle above it. */
+.map3-legend { margin: 0 0 .75rem; font-size: 12px; }
+/* <strong> is 700 by default; 600 matches the legend titles the charts draw. */
+.map3-legend strong { font-weight: 600; }
+/* No gap between the steps, so all seven bands, zero included, read as one
+   ordered ramp rather than as separate chips. inline-flex keeps the strip
+   only as wide as its swatches, instead of stretching across the card. */
+.map3-ramp { display: inline-flex; margin-top: .45rem; }
+.map3-ramp-step { display: flex; flex-direction: column; align-items: center; }
+.map3-ramp-swatch { display: block; width: 44px; height: 13px; }
+.map3-ramp-label { margin-top: .2rem; font-size: 12px; }                        /* = legend label   */
+
+/* Two equal columns. minmax(0, 1fr): "1fr" = one share of the free space, and
+   the 0 minimum lets a panel shrink below its content's natural width. */
+.map3-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.map3-panels section { min-width: 0; }
+/* Panel headings sit a step below a map title: they name a category, not the
+   whole map. */
+.map3-panels h3 { margin: 0 0 .4rem; font-size: 14px; font-weight: 600; }
+/* Same rule as the big maps: height = width x 0.959 is Australia's shape in
+   this projection, so the map fills the panel instead of leaving slack down
+   both sides. There is no title inside these specs, so no extra allowance. */
+.map3-panel-chart { width: 100%; aspect-ratio: 1 / 0.959; }
+
+
+/* ==========================================================================
+   13. FOOTER - data sources and credits
+   ========================================================================== */
+.site-footer {
+  background: var(--forest-900);
+  color: var(--sand-50);
+  padding: 4rem var(--gutter) 5rem;
+  font-size: 11pt;
+}
+
+/* Two columns on wide screens, one on narrow ones, with no media query:
+   "repeat(auto-fit, minmax(A, 1fr))" fits as many columns of at least A as
+   the width allows. min(100%, 22em) stops A being wider than a phone. */
+.footer-inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22em), 1fr));
+  gap: 2.5rem 4rem;                /* row gap, column gap */
+}
+.footer-inner > div {
+  max-width: var(--text-max);      /* ~60 characters a line here too         */
+}
+
+.footer-title {
+  margin: 0 0 1rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.sources {
+  margin: 0;
+  padding-left: 1.2em;             /* room for the bullet points             */
+}
+.sources li {
+  margin-bottom: 0.6rem;
+}
+
+.site-footer p {
+  margin: 0 0 0.75rem;
+  color: var(--sand-200);
+}
+.site-footer a {
+  color: var(--ochre-300);
+}
+
+
+/* ==========================================================================
+   14. SMALL SCREENS (phones)
+   ========================================================================== */
+@media (max-width: 640px) {
+  /* Map 3's four panels go one per row. */
+  .map3-panels { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  /* Changing the tokens is enough: every rule that uses them follows. */
+  :root {
+    --gutter: 16px;
+    --card-pad: 12px;
+  }
+  .intro,
+  .chapter,
+  .closing {
+    padding-block: 4rem;           /* "block" = top and bottom only          */
+  }
+  .chapter-title { font-size: 1.75rem; }
+  .story-row + .story-row { margin-top: 4rem; }
+}
