@@ -27,12 +27,12 @@
   the right, Figure 2's chart is on the RIGHT, and so on down the page.
 
   WRITING THE STORY
-  Every box with a dashed ochre outline is a TODO placeholder (class="todo").
+  Every box with a dashed ochre outline is a TODO placeholder ().
   Each one says what to write and how long it should be. The text column fits
   about 60 characters per line, so "4 lines" = about 240 characters. Each
   placeholder is already about as long as the text it stands for, so the page
   shows the real layout. To finish one: replace its words with yours and
-  delete class="todo" from the element.
+  delete  from the element.
   ============================================================================
 -->
 <html lang="en">
@@ -80,7 +80,7 @@
       <h1 class="hero-title">Australian National Parks Tourism</h1>
 
       <!-- TODO: add the month and year (e.g. the submission date). -->
-      <p class="byline">By Nicholas Ong &middot; <span class="todo">October 2026</span></p>
+      <p class="byline">By Nicholas Ong &middot; <span >October 2026</span></p>
     </div>
   </header>
 
@@ -150,12 +150,12 @@
 
       <!-- Section heading block (style.css 6): kicker, title, lead-in. -->
       <header class="chapter-head">
-        <p class="chapter-kicker">Section 01</p>
+        <p class="chapter-kicker">Section 1</p>
         <h2 class="chapter-title" id="landscape-title">What does the landscape in Australia look like?</h2>
         <!-- TODO: section intro. Answer "what is there to visit, where is it,
              and who looks after it?" and tell the reader what the three maps
              below will show. -->
-        <p class="chapter-intro todo">
+        <p>
           Australia's protected areas differs in size and location. <br>
           These maps show where national parks are found, <br>
           how much land is protected in each state and territory, <br>
@@ -176,7 +176,7 @@
           <div id="map1" class="map-box"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 1</p>
+          <p class="fig-label">Map 1</p>
           <!-- TODO for Figure 1. Budget: heading <= 40 characters; body 9-12
                lines (540-720 characters) across the three paragraphs.
                Ideas: where do the circles bunch up (coast vs interior)? Which
@@ -196,7 +196,7 @@
           </p>
           <p>The map shows where parks are and how much land they cover. <br>
                           But who are the ones looking after them? <br>
-                          The next chart focuses on organisations responsible <br>
+                          The next map focuses on organisations responsible <br>
                           for the protected areas in Australia.
           </p>
         </div>
@@ -212,16 +212,27 @@
           <div id="map3" class="chart-stretch"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 2</p>
+          <p class="fig-label">Map 2</p>
           <!-- TODO for Figure 2. Budget: heading <= 40; body 9-12 lines
                (540-720 characters).
                Ideas: which governance types have the most protected areas,
                and where? Why might it matter to a visitor who manages a park
                (access, facilities, rules)? If unsure, ask it as a question. -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which governance types hold the most protected areas, and where do they concentrate? Tell the reader which two panels to compare first, and what to look for.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Why might governance matter to a visitor? Think about access, facilities and who sets the rules; phrase it as a question if you are unsure.</p>
-          <p class="todo">TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Figure 3: how much of each state&rsquo;s land is protected overall?</p>
+          <h3>Highest counts: government and private</h3>
+          <p>Compare Government and Private first: darker cells<br>
+          mean more protected areas on the same count scale.<br>
+          Both have high counts along the east coast and in<br>
+          the southwest; Government is also strong in the southeast.
+      </p>
+          <p>Who sets entry rules, maintains trails and provides<br>
+            facilities under each type of governance? Could this <br>
+            affect public access, permit requirements and<br>
+            services available when tourists arrive at a protected area?
+          </p>
+          <p>These maps count protected areas, not their size. <br>
+            The next map asks a different question: how much of <br>
+            each state's total land area are national parks?
+          </p>
         </div>
       </article>
 
@@ -233,16 +244,28 @@
           <div id="map2" class="map-box"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 3</p>
+          <p class="fig-label">Map 3</p>
           <!-- TODO for Figure 3. Budget: heading <= 40; body 9-12 lines
                (540-720 characters).
                Ideas: name the highest and lowest shares; warn that a large
                protected share does not mean many visitors; end by asking why
                the lowest-share state is worth a closer look. -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which states and territories protect the largest and smallest share of their land? Name the extremes the reader should notice first, in your own words.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Add a caution: a bigger protected share does not mean more visitors. Note what this map can, and cannot, tell us about tourism.</p>
-          <p class="todo">TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Section 02: why look more closely at Queensland next?</p>
+          <h3>National park land ranges from 3.4% to 33%</h3>
+          <p>Look first at the ACT: 33% of its land is national parks,<br>
+            the highest share shown. Western Australia has the <br>
+            lowest share at 3.4%. Tasmania leads states at 21.8%, <br>
+            while the Northern Territory is also low at 4.3%.
+          </p>
+          <p>
+            A larger protected share does not mean more visitors. <br>
+            This map shows the proportion of land that is a national park, <br>
+            but not visitor numbers, access or tourism demand. <br>
+            It compares land coverage, instead of a destination's popularity.
+          </p>
+          <p>Queensland combines a low protected share, 5.5%, <br>
+            with clusters of national parks along its east coast. <br>
+            Section 2 looks more closely at its parks and visitors.
+          </p>
         </div>
       </article>
     </section>
@@ -256,11 +279,15 @@
          ==================================================================== -->
     <section class="chapter chapter--sage" id="change" aria-labelledby="change-title">
       <header class="chapter-head">
-        <p class="chapter-kicker">Section 02</p>
+        <p class="chapter-kicker">Section 2</p>
         <h2 class="chapter-title" id="change-title">What changed in Queensland's parks?</h2>
         <!-- TODO: section intro. Has protected land grown or shrunk? Why zoom
              in on Queensland (pick up from Figure 3)? -->
-        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Has the amount of protected land grown or shrunk over time? Explain why this section zooms in on Queensland, picking up where Figure 3 left off.</p>
+        <p>Map 3 showed that just 5.5% of Queensland's land was protected.<br>
+          Now we ask how that share has changed over time. <br>
+          Has protected land expanded or reduced, and when? <br>
+          This section shows the changes behind today's snapshot in Queensland.
+        </p>
       </header>
 
       <!-- ---- FIGURE 4 - vis 4: change in protected area, 2008 to 2023/24 --
@@ -271,17 +298,17 @@
           <div id="vis4"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 4</p>
+          <p class="fig-label">Visualisation 4</p>
           <!-- TODO for Figure 4. Budget: heading <= 40; body 8-11 lines
                (480-660 characters).
                Ideas: the overall direction for national parks; the category
                that stands out; remind readers that each panel has its own
                hectare scale; what this could mean for the parks people can
                actually visit. -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Has national-park area in Queensland grown or shrunk since 2008? State the overall direction and the size of the change in your own words.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which category stands out, and why? Remind the reader that each panel has its own hectare scale, so lengths compare within a panel only.</p>
-          <p class="todo">TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). What could this mean for the parks visitors can actually go to?</p>
+          <h3>TODO &middot; headline claim, &le; 40 characters</h3>
+          <p>TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Has national-park area in Queensland grown or shrunk since 2008? State the overall direction and the size of the change in your own words.</p>
+          <p>TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which category stands out, and why? Remind the reader that each panel has its own hectare scale, so lengths compare within a panel only.</p>
+          <p>TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). What could this mean for the parks visitors can actually go to?</p>
         </div>
       </article>
 
@@ -292,15 +319,15 @@
           <div id="vis5"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 5</p>
+          <p class="fig-label">Visualisation 5</p>
           <!-- TODO for Figure 5. Budget: heading <= 40; body 6-8 lines
                (360-480 characters).
                Ideas: which category climbed or fell in rank, and when; what
                the 2014 and 2016 annotations explain; then turn from the land
                (supply) to the people who visit it (demand). -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which category climbed or fell in rank, and when? Use the 2014 and 2016 annotations to explain the jumps the reader will see.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Section 03: protected land is the supply; now turn to the visitors.</p>
+          <h3>TODO &middot; headline claim, &le; 40 characters</h3>
+          <p>TODO P1 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which category climbed or fell in rank, and when? Use the 2014 and 2016 annotations to explain the jumps the reader will see.</p>
+          <p>TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Bridge to Section 03: protected land is the supply; now turn to the visitors.</p>
         </div>
       </article>
     </section>
@@ -315,11 +342,11 @@
          ==================================================================== -->
     <section class="chapter chapter--sand" id="regional" aria-labelledby="regional-title">
       <header class="chapter-head">
-        <p class="chapter-kicker">Section 03</p>
+        <p class="chapter-kicker">Section 3</p>
         <h2 class="chapter-title" id="regional-title">Regional tourism</h2>
         <!-- TODO: section intro. Where do overnight visitors go, what is a
              trip worth, and where do visitors come from? -->
-        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Move from land to people: where do overnight visitors go, what is each trip worth to the region, and which states do they come from?</p>
+        <p>TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Move from land to people: where do overnight visitors go, what is each trip worth to the region, and which states do they come from?</p>
       </header>
 
       <!-- ---- FIGURE 6 - vis 6: overnight trips, 2023 vs 2024 ---------------
@@ -329,17 +356,17 @@
           <div id="vis6"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 6</p>
+          <p class="fig-label">Visualisation 6</p>
           <!-- TODO for Figure 6. Budget: heading <= 40; body 8-11 lines
                (480-660 characters).
                Ideas: which regions draw the most trips and how far ahead they
                are; which grew or fell from 2023 to 2024 (point to the %
                labels); caveat that this is the top 10 of 30 regions and
                overnight trips only (no day trips). -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which national-park regions drew the most overnight trips in 2024? Name the leaders and how far ahead they are of the rest of the top ten.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which regions grew and which fell between 2023 and 2024? Point to the % labels, and suggest a reason only if your data supports it.</p>
-          <p class="todo">TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). Caveat: top 10 of 30 regions, and overnight trips only.</p>
+          <h3>TODO &middot; headline claim, &le; 40 characters</h3>
+          <p>TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which national-park regions drew the most overnight trips in 2024? Name the leaders and how far ahead they are of the rest of the top ten.</p>
+          <p>TODO P2 &middot; &asymp; 3&ndash;4 lines (180&ndash;240 characters). Which regions grew and which fell between 2023 and 2024? Point to the % labels, and suggest a reason only if your data supports it.</p>
+          <p>TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). Caveat: top 10 of 30 regions, and overnight trips only.</p>
         </div>
       </article>
 
@@ -350,15 +377,15 @@
           <div id="vis7"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 7</p>
+          <p class="fig-label">Visualisation 7</p>
           <!-- TODO for Figure 7. Budget: heading <= 40; body 7-10 lines
                (420-600 characters).
                Ideas: which park regions sit above or below the cities on spend
                per trip; why the gap might exist (ask it as a question); remind
                readers it is regional spending only, not the whole trip. -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How does spending per trip in these park regions compare with the major cities? Which regions sit above the cities, and which sit below?</p>
-          <p class="todo">TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). Why might the gap exist? Ask it as a question, and remind readers this is regional spending only, not the full cost of a trip.</p>
+          <h3>TODO &middot; headline claim, &le; 40 characters</h3>
+          <p>TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How does spending per trip in these park regions compare with the major cities? Which regions sit above the cities, and which sit below?</p>
+          <p>TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). Why might the gap exist? Ask it as a question, and remind readers this is regional spending only, not the full cost of a trip.</p>
         </div>
       </article>
 
@@ -370,17 +397,17 @@
           <div id="vis11"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 8</p>
+          <p class="fig-label">Visualisation 8</p>
           <!-- TODO for Figure 8. Budget: heading <= 40; body 7-10 lines
                (420-600 characters).
                Ideas: which states send and receive the most interstate trips;
                invite the reader to hover an origin state; explain the grey
                ribbons in plain words; end by asking how people make these
                interstate trips (leads into flights in Section 04). -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which states send and receive the most interstate overnight trips? Invite the reader to hover an origin state, and suggest one to try first.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 2 lines (100&ndash;140 characters). Explain what the grey ribbons mean in plain words.</p>
-          <p class="todo">TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). Bridge to Section 04: interstate trips need transport, so how do visitors get there?</p>
+          <h3>TODO &middot; headline claim, &le; 40 characters</h3>
+          <p>TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which states send and receive the most interstate overnight trips? Invite the reader to hover an origin state, and suggest one to try first.</p>
+          <p>TODO P2 &middot; &asymp; 2 lines (100&ndash;140 characters). Explain what the grey ribbons mean in plain words.</p>
+          <p>TODO P3 &middot; &asymp; 2 lines (100&ndash;140 characters). Bridge to Section 04: interstate trips need transport, so how do visitors get there?</p>
         </div>
       </article>
     </section>
@@ -394,11 +421,11 @@
          ==================================================================== -->
     <section class="chapter chapter--sage" id="access" aria-labelledby="access-title">
       <header class="chapter-head">
-        <p class="chapter-kicker">Section 04</p>
-        <h2 class="chapter-title" id="access-title">Access over time</h2>
+        <p class="chapter-kicker">Section 4</p>
+        <h2 class="chapter-title" id="access-title">Over time, how do visitors reach park regions?</h2>
         <!-- TODO: section intro. How do visitors reach park regions? How has
              that changed since 2014, and when in the year do they travel? -->
-        <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). How do visitors reach park regions? Introduce both views below: how air travel has changed since 2014, and when in the year each gateway is busiest.</p>
+        <p>TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). How do visitors reach park regions? Introduce both views below: how air travel has changed since 2014, and when in the year each gateway is busiest.</p>
       </header>
 
       <!-- ---- FIGURE 9 - vis 8: monthly passengers, top five routes ---------
@@ -409,15 +436,15 @@
           <div id="vis8"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 9</p>
+          <p class="fig-label">Visualisation 9</p>
           <!-- TODO for Figure 9. Budget: heading <= 40; body 6-9 lines
                (360-540 characters).
                Ideas: the 12-year trend, the COVID drop and the recovery;
                whether every route recovered the same way; tell readers they
                can click a route in the legend to focus on it. -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How has air travel on these park-region routes changed since 2014? Describe the long-term trend, the COVID drop and the recovery in your own words.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Did every route recover the same way? Invite the reader to click a route in the legend to focus on it.</p>
+          <h3 >TODO &middot; headline claim, &le; 40 characters</h3>
+          <p >TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How has air travel on these park-region routes changed since 2014? Describe the long-term trend, the COVID drop and the recovery in your own words.</p>
+          <p >TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). Did every route recover the same way? Invite the reader to click a route in the legend to focus on it.</p>
         </div>
       </article>
 
@@ -428,16 +455,16 @@
           <div id="vis9"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 10</p>
+          <p class="fig-label">Visualisation 10</p>
           <!-- TODO for Figure 10. Budget: heading <= 40; body 7-10 lines
                (420-600 characters).
                Ideas: read along each row to find an airport's busiest months;
                contrast the northern and southern gateways; what these seasons
                could mean for visiting nearby parks (weather, school holidays,
                crowds). -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which months are busiest at each gateway airport? Contrast the northern and southern gateways, and tell the reader to read along each row.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). What might these seasons mean for visiting the nearby parks, such as weather, school holidays or crowds?</p>
+          <h3>TODO &middot; headline claim, &le; 40 characters</h3>
+          <p>TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Which months are busiest at each gateway airport? Contrast the northern and southern gateways, and tell the reader to read along each row.</p>
+          <p>TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). What might these seasons mean for visiting the nearby parks, such as weather, school holidays or crowds?</p>
         </div>
       </article>
     </section>
@@ -450,7 +477,7 @@
          ==================================================================== -->
     <section class="chapter chapter--sand" id="business" aria-labelledby="business-title">
       <header class="chapter-head">
-        <p class="chapter-kicker">Section 05</p>
+        <p class="chapter-kicker">Section 5</p>
         <h2 class="chapter-title" id="business-title">The business base</h2>
         <!-- TODO: section intro. Who serves these visitors? -->
         <p class="chapter-intro todo">TODO &middot; section intro, &le; 4 lines (&asymp; 240 characters). Who serves these visitors? Introduce the tourism businesses behind the trips, and say what the reader should compare in the chart below.</p>
@@ -463,15 +490,15 @@
           <div id="vis10"></div>
         </figure>
         <div class="story-text">
-          <p class="fig-label">Figure 11</p>
+          <p class="fig-label">Visualisation 11</p>
           <!-- TODO for Figure 11. Budget: heading <= 40; body 6-8 lines
                (360-480 characters).
                Ideas: compare the size bands of the two groups across the
                middle labels; what the business mix might mean for local
                economies that depend on park visitors. -->
-          <h3 class="todo">TODO &middot; headline claim, &le; 40 characters</h3>
-          <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How do tourism businesses in park regions compare in size with those in the comparison regions? Tell the reader which bars to compare.</p>
-          <p class="todo">TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). What might this business mix mean for local economies that depend on park visitors?</p>
+          <h3>TODO &middot; headline claim, &le; 40 characters</h3>
+          <p>TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). How do tourism businesses in park regions compare in size with those in the comparison regions? Tell the reader which bars to compare.</p>
+          <p>TODO P2 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). What might this business mix mean for local economies that depend on park visitors?</p>
         </div>
       </article>
     </section>
@@ -488,9 +515,9 @@
              Answer the topic's questions directly: visitor numbers, parks
              compared, seasons compared, long-term trends, and how outdoor
              tourism has changed. Then be honest about the data's limits. -->
-        <p class="todo">TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Answer the topic in a few sentences: what did the visitor numbers show, how do parks and seasons compare, and which long-term trends stood out?</p>
-        <p class="todo">TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). How has outdoor tourism changed over time, drawing on Figures 4, 5 and 9?</p>
-        <p class="todo">TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). State the main limits of the data: which years, regions or measures are missing.</p>
+        <p>TODO P1 &middot; &asymp; 4 lines (200&ndash;240 characters). Answer the topic in a few sentences: what did the visitor numbers show, how do parks and seasons compare, and which long-term trends stood out?</p>
+        <p>TODO P2 &middot; &asymp; 3 lines (150&ndash;200 characters). How has outdoor tourism changed over time, drawing on Figures 4, 5 and 9?</p>
+        <p>TODO P3 &middot; &asymp; 2&ndash;3 lines (120&ndash;180 characters). State the main limits of the data: which years, regions or measures are missing.</p>
       </div>
     </section>
 
@@ -522,7 +549,7 @@
         <p>Made by Nicholas Ong for FIT3179 Data Visualisation. Charts built with Vega-Lite.</p>
         <!-- TODO (optional): anything else you want to credit, such as an
              Acknowledgement of Country or the unit and semester. -->
-        <p class="todo">TODO (optional) &middot; 1&ndash;2 lines: any further credits or acknowledgements.</p>
+        <p>TODO (optional) &middot; 1&ndash;2 lines: any further credits or acknowledgements.</p>
       </div>
     </div>
   </footer>
