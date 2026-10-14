@@ -556,16 +556,19 @@ a:hover {                          /* ":hover" = while the mouse is over it  */
    with your own words, delete class="todo" from that element (or delete this
    whole rule once everything is written). */
 .todo {
-  outline: 2px dashed var(--ochre-600);
-  outline-offset: 4px;             /* outline sits 4px outside the text      */
-  background: rgb(156 74 34 / 0.06);
+  /* No border: just a subtle, slightly darker sand shade behind the text.
+     The padding/negative margin pair gives the shade room around the words
+     without shifting the text from its normal position. */
+  background: rgb(156 74 34 / 0.07);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-inline: -6px;
   color: var(--ink-600);
   font-style: italic;
 }
 /* On the dark hero and footer, dark text would vanish: use light colours. */
 .hero .todo,
 .site-footer .todo {
-  outline-color: var(--ochre-300);
   background: rgb(224 163 107 / 0.12);
   color: inherit;                  /* "inherit" = use the parent's colour   */
 }
