@@ -3,7 +3,6 @@
   "usermeta": {
     "title": "Government and private governance have the highest counts per cell",
     "subtitle": "Distinct terrestrial protected areas per 200x200km cell, by governance category. All panels share one count scale. Grey means no recorded locations.",
-    "source": "Source: CAPAD 2024, terrestrial protected-area records.",
     "legendTitle": "Distinct protected areas per cell",
     "governanceNames": {
       "C": "Community",
