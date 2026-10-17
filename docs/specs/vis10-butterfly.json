@@ -1,12 +1,12 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "National park regions have a larger share of employing tourism businesses",
+    "text": "National park regions have a larger share of employing tourism businesses in 2025",
     "subtitle": [
-      "Bars show each size band's share of its group's tourism businesses in June 2024.",
+      "Bars show each size band's share of its group's tourism businesses in June 2025.",
       "Park-associated regions vs comparison regions; darker bars mean capital cities.",
       " ",
-      "Source: TRA, Tourism Businesses in Australia 2025, state tables, June 2024."
+      "Source: TRA, Tourism Businesses in Australia 2025, state tables, June 2025."
     ],
     "anchor": "start",
     "offset": 14
