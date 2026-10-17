@@ -27,10 +27,28 @@
       }
     }
   },
+  "params": [
+    {
+      "name": "sortMode",
+      "value": "Latitude (north to south)",
+      "bind": {
+        "input": "select",
+        "name": "Sort rows by: ",
+        "options": [
+          "Latitude (north to south)",
+          "Peak month"
+        ]
+      }
+    }
+  ],
   "transform": [
     {
       "calculate": "monthFormat(datum.month_num - 1)",
       "as": "month_name"
+    },
+    {
+      "calculate": "sortMode === 'Peak month' ? datum.peak_month_num * 1000 - datum.latitude : -datum.latitude",
+      "as": "row_order"
     }
   ],
   "width": 520,
@@ -69,9 +87,9 @@
       "type": "nominal",
       "title": null,
       "sort": {
-        "field": "latitude",
-        "op": "max",
-        "order": "descending"
+        "field": "row_order",
+        "op": "min",
+        "order": "ascending"
       },
       "scale": {
         "paddingInner": 0.1,
@@ -107,9 +125,9 @@
               0.11
             ],
             "range": [
-              "#e2f1f0",
-              "#3d9196",
-              "#0a3d41"
+              "#fff3a8",
+              "#3f9bc4",
+              "#0a2463"
             ],
             "interpolate": "hcl",
             "clamp": true
@@ -290,6 +308,7 @@
           "groupby": [
             "airport",
             "latitude",
+            "row_order",
             "peak_month_num"
           ]
         }
