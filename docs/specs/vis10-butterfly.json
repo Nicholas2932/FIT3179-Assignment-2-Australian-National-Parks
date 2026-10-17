@@ -3,8 +3,8 @@
   "title": {
     "text": "National park regions have a larger share of employing tourism businesses",
     "subtitle": [
-      "Bars show each size band’s share of its group’s tourism businesses in June 2024.",
-      "Park-associated regions vs comparison regions; darker segments mark capital cities.",
+      "Bars show each size band's share of its group's tourism businesses in June 2024.",
+      "Park-associated regions vs comparison regions; darker bars mean capital cities.",
       " ",
       "Source: TRA, Tourism Businesses in Australia 2025, state tables, June 2024."
     ],
@@ -233,7 +233,7 @@
               ]
             },
             {
-              "calculate": "format(datum.side_total, ',') + ' tourism businesses' + ' · ' + datum.side_regions + ' regions'",
+              "calculate": "format(datum.side_total, ',') + ' tourism businesses' + ' in ' + datum.side_regions + ' regions'",
               "as": "totals_text"
             }
           ],
@@ -558,7 +558,7 @@
               ]
             },
             {
-              "calculate": "format(datum.side_total, ',') + ' tourism businesses' + ' · ' + datum.side_regions + ' regions'",
+              "calculate": "format(datum.side_total, ',') + ' tourism businesses' + ' in ' + datum.side_regions + ' regions'",
               "as": "totals_text"
             }
           ],

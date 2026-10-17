@@ -1,9 +1,9 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Cairns peaks in July, while Queensland and Tasmania’s gateways peak in January",
+    "text": "Cairns peaks in July, while Queensland and Tasmania's gateways peak in January",
     "subtitle": [
-      "Each cell shows a month’s share of 2024 domestic and regional passenger movements.",
+      "Each cell shows a month's share of 2024 domestic and regional passenger movements.",
       "Shares reveal seasonal timing across airports of different sizes; rows are north to south.",
       " ",
       "Source: BITRE, Aviation-Airport Traffic Data-May 2026.xlsx, 'Airport Passengers' sheet."
