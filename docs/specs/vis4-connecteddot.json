@@ -5,7 +5,8 @@
     "subtitle": [
       "Area change by protected-area category in Queensland, from 2008 to 2023/24. Each national park category is reported separately.",
       "Cape York national parks increased by 789.6% from 2009, this increase show Queensland's focus in Cape York's protection instead of other parks.",
-      "* excludes Aboriginal land, Cape York, scientific and recovery."],
+      "* excludes Aboriginal land, Cape York, scientific and recovery."
+    ],
     "anchor": "start",
     "offset": 16
   },
@@ -273,7 +274,8 @@
               "#ffffff",
               "#37474f"
             ]
-          }
+          },
+          "legend": null
         }
       }
     },

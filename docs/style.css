@@ -422,6 +422,21 @@ a:hover {                          /* ":hover" = while the mouse is over it  */
   .story-row--flip > .chart-card { grid-column: 2; grid-row: 1; }
   .story-row--flip > .story-text { grid-column: 1; grid-row: 1; }
 
+  /* The introduction uses the same room: the text on the left (the same
+     column width as the story text) and the roadmap on the right, so the
+     page is not one narrow column with empty margins. */
+  .intro-inner {
+    max-width: var(--page-max);
+    display: grid;
+    grid-template-columns: var(--text-max) minmax(0, 36rem);
+    column-gap: var(--col-gap);
+    justify-content: center;
+    align-items: start;
+  }
+  /* The roadmap's own top margin and its lead-in line would otherwise sit
+     lower than the title; start the right column level with the title. */
+  .intro-roadmap { padding-top: 0.5rem; }
+
   /* Drop the text by the card's padding so the figure label lines up with
      the top of the chart's title inside the card. */
   .story-text {
