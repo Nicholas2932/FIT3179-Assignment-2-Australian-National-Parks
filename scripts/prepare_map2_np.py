@@ -11,8 +11,15 @@ Why these choices:
   parks, so counting them would count the same land twice.
 - OVERLAP == "2" marks a record that overlaps another record, so it is skipped
   to avoid double counting.
-- Area is GIS_AREA (hectares from the polygon). The official sheet already
-  allows for overlaps; this sum is close to it but not identical.
+- Area is GIS_AREA (hectares from the polygon). Checked against the official
+  'Type' sheet: the non-overlap "National Park" row (715 parks, 36,955,378 ha)
+  equals this sum exactly, so the filter reproduces CAPAD's own figure.
+- "Wilderness Zone" records with OVERLAP == "1" are added to the area. CAPAD cuts
+  ACT's Bimberi Wilderness out of the Namadgi polygon and gives it its own TYPE,
+  although it is part of Namadgi National Park (77,872 + 28,785 ha ~ Namadgi's
+  official ~106,000 ha). Victoria's wilderness zones are OVERLAP == "2" (drawn on
+  top of their parks), so they stay skipped. A zone is not a separate park, so it
+  adds area but not to the park count.
 """
 import csv
 import json
@@ -41,9 +48,13 @@ area, ids = defaultdict(float), defaultdict(set)
 for geometry in next(iter(topo["objects"].values()))["geometries"]:
     p = geometry["properties"]
     name = STATE_NAMES.get(p["STATE"])   # skips EXT (external territories)
-    if p["TYPE"] in NP_TYPES and p["OVERLAP"] != "2" and name:
+    if p["OVERLAP"] == "2" or not name:
+        continue
+    if p["TYPE"] in NP_TYPES:
         area[name] += p["GIS_AREA"] or 0
         ids[name].add(p["PA_ID"])
+    elif p["TYPE"] == "Wilderness Zone":   # zone inside a park: area only
+        area[name] += p["GIS_AREA"] or 0
 
 with open(OUTPUT, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)

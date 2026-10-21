@@ -13,26 +13,6 @@
     the browser ignores it. Comments in this file explain what each part is
     and which rule in style.css styles it ("see style.css 7" = section 7).
 
-  THE STORY, TOP TO BOTTOM
-    Hero ............. title and byline
-    Introduction ..... what the story investigates, and a roadmap
-    01 Establishing the landscape ... Figure 1 map 1, Figure 2 map 3, Figure 3 map 2
-    02 Change ........................ Figure 4 vis 4, Figure 5 vis 5
-    03 Regional tourism .............. Figure 6 vis 6, Figure 7 vis 7, Figure 8 vis 11
-    04 Access over time .............. Figure 9 vis 8, Figure 10 vis 9
-    05 The business base ............. Figure 11 vis 10
-    Conclusion ....... what it all adds up to
-    Footer ........... data sources and credits
-  The charts alternate sides: Figure 1's chart is on the LEFT with its text on
-  the right, Figure 2's chart is on the RIGHT, and so on down the page.
-
-  WRITING THE STORY
-  Every box with a dashed ochre outline is a TODO placeholder ().
-  Each one says what to write and how long it should be. The text column fits
-  about 60 characters per line, so "4 lines" = about 240 characters. Each
-  placeholder is already about as long as the text it stands for, so the page
-  shows the real layout. To finish one: replace its words with yours and
-  delete  from the element.
   ============================================================================
 -->
 <html lang="en">
@@ -72,14 +52,8 @@
     <div class="hero-inner">
       <!-- Small label above the title. -->
       <p class="hero-kicker">FIT3179 Data Visualisation</p>
-
-      <!-- TODO (optional): this working title is the topic name. Replace it
-           with your own headline if you like; keep it to about 45 characters
-           so it fits on two lines. <h1> = the single most important heading
-           on the page. -->
       <h1 class="hero-title">Australian National Parks Tourism</h1>
 
-      <!-- TODO: add the month and year (e.g. the submission date). -->
       <p class="byline">By Nicholas Ong &middot; <span >October 2026</span></p>
     </div>
   </header>
@@ -104,16 +78,8 @@
        <div class="intro-text">
         <h2 class="chapter-title" id="introduction-title">Introduction</h2>
 
-        <!-- DRAFT, adapted from the assignment's topic description. It states
-             what the story investigates, not what it finds, so edit it freely
-             or keep it as it is. -->
         <p class="intro-lede">This story investigates visitor numbers to Australia&rsquo;s national parks and protected areas. It compares visitation across parks and across seasons, looks for long-term tourism trends, and explores how outdoor tourism has changed over time.</p>
 
-        <!-- TODO: your hook. Ideas: why should anyone care how many people
-             visit national parks (local jobs, conservation, crowding)? What
-             might a reader already assume (e.g. "parks are busiest in summer")
-             that the charts will test? Keep it personal, and do not give the
-             findings away yet. -->
         <p>Why does tourism to National Parks in Australia matter? <br>
           It matters because it plays an important role to Australia's economy, environment and local communities.
           Most people think that Australia's national parks are 
@@ -141,21 +107,13 @@
 
     <div class="strata strata--thin" aria-hidden="true"></div>
 
-    <!-- ====================================================================
-         SECTION 01 - ESTABLISHING THE LANDSCAPE (sand background)
-         Before counting visitors: what is there to visit, where, and who
-         looks after it. Three maps, ending on the state with the smallest
-         protected share (Queensland), which sets up Section 02.
-         ==================================================================== -->
     <section class="chapter chapter--sand" id="landscape" aria-labelledby="landscape-title">
 
       <!-- Section heading block (style.css 6): kicker, title, lead-in. -->
       <header class="chapter-head">
         <p class="chapter-kicker">Section 1</p>
         <h2 class="chapter-title" id="landscape-title">What does the landscape in Australia look like?</h2>
-        <!-- TODO: section intro. Answer "what is there to visit, where is it,
-             and who looks after it?" and tell the reader what the three maps
-             below will show. -->
+
         <p>
           Australia's protected areas differs in size and location. <br>
           These maps show where national parks are found, <br>
@@ -178,12 +136,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Map 1</p>
-          <!-- TODO for Figure 1. Budget: heading <= 40 characters; body 9-12
-               lines (540-720 characters) across the three paragraphs.
-               Ideas: where do the circles bunch up (coast vs interior)? Which
-               parks are the biggest? Do older (darker) and newer parks sit in
-               different places? Don't repeat the chart's subtitle; tell the
-               reader what to notice and why it matters for tourism. -->
+
           <h3>More parks east, bigger parks inland</h3>
           <p>Start with the large circle in inland South Australia. <br>
                           Circle size show park area, bigger means more hectares. <br>
@@ -214,11 +167,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Map 2</p>
-          <!-- TODO for Figure 2. Budget: heading <= 40; body 9-12 lines
-               (540-720 characters).
-               Ideas: which governance types have the most protected areas,
-               and where? Why might it matter to a visitor who manages a park
-               (access, facilities, rules)? If unsure, ask it as a question. -->
+
           <h3>Highest counts: government and private</h3>
           <p>Compare Government and Private first: darker cells<br>
           mean more protected areas on the same count scale.<br>
@@ -246,11 +195,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Map 3</p>
-          <!-- TODO for Figure 3. Budget: heading <= 40; body 9-12 lines
-               (540-720 characters).
-               Ideas: name the highest and lowest shares; warn that a large
-               protected share does not mean many visitors; end by asking why
-               the lowest-share state is worth a closer look. -->
+
           <h3>National park land ranges from 3.4% to 33%</h3>
           <p>Look first at the ACT: 33% of its land is national parks,
             the highest share shown. Western Australia has the 
@@ -273,17 +218,11 @@
 
     <div class="strata strata--thin" aria-hidden="true"></div>
 
-    <!-- ====================================================================
-         SECTION 02 - CHANGE (sage background)
-         Queensland as the case study: how its protected areas changed in
-         area and in rank from 2008 to 2024.
-         ==================================================================== -->
     <section class="chapter chapter--sage" id="change" aria-labelledby="change-title">
       <header class="chapter-head">
         <p class="chapter-kicker">Section 2</p>
         <h2 class="chapter-title" id="change-title">What changed in Queensland's parks?</h2>
-        <!-- TODO: section intro. Has protected land grown or shrunk? Why zoom
-             in on Queensland (pick up from Figure 3)? -->
+
         <p>Map 3 showed that just 5.5% of Queensland's land was protected.<br>
           Now we ask how that share has changed over time. <br>
           Has protected land expanded or reduced, and when? <br>
@@ -300,12 +239,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 4</p>
-          <!-- TODO for Figure 4. Budget: heading <= 40; body 8-11 lines
-               (480-660 characters).
-               Ideas: the overall direction for national parks; the category
-               that stands out; remind readers that each panel has its own
-               hectare scale; what this could mean for the parks people can
-               actually visit. -->
+
           <h3>Main national park category reduced by 9.8%</h3>
           <p>Queensland's main national park category lost 9.8%<br>
             of its area between 2008 and 2023/24, roughly 1/10th.<br>
@@ -333,11 +267,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 5</p>
-          <!-- TODO for Figure 5. Budget: heading <= 40; body 6-8 lines
-               (360-480 characters).
-               Ideas: which category climbed or fell in rank, and when; what
-               the 2014 and 2016 annotations explain; then turn from the land
-               (supply) to the people who visit it (demand). -->
+       
           <h3>Cape York parks climbed to 5th place</h3>
           <p>Cape York parks grew from 8th in 2008 to 5th<br>
             in 2013. Recovery parks disappear as categories were<br>
@@ -354,18 +284,11 @@
 
     <div class="strata strata--thin" aria-hidden="true"></div>
 
-    <!-- ====================================================================
-         SECTION 03 - REGIONAL TOURISM (sand background)
-         Where overnight visitors go (vis 6), what each trip is worth (vis 7,
-         same ten regions, so it must sit right after vis 6), and where the
-         visitors come from (vis 11), which leads into how they travel.
-         ==================================================================== -->
     <section class="chapter chapter--sand" id="regional" aria-labelledby="regional-title">
       <header class="chapter-head">
         <p class="chapter-kicker">Section 3</p>
         <h2 class="chapter-title" id="regional-title">How does the tourism flow?</h2>
-        <!-- TODO: section intro. Where do overnight visitors go, what is a
-             trip worth, and where do visitors come from? -->
+
         <p>Protected land is only one part of the story. <br>
             Next we see where overnight travellers go, how much <br>
             each trip is in regional spending, and which states <br>
@@ -380,12 +303,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 6</p>
-          <!-- TODO for Figure 6. Budget: heading <= 40; body 8-11 lines
-               (480-660 characters).
-               Ideas: which regions draw the most trips and how far ahead they
-               are; which grew or fell from 2023 to 2024 (point to the %
-               labels); caveat that this is the top 10 of 30 regions and
-               overnight trips only (no day trips). -->
+
           <h3>North Coast NSW leads overnight trips</h3>
           <p>North Coast NSW leads in 2024 with about 6.2 million 
               overnight trips, ahead of South Coast at 4.5 million. 
@@ -408,11 +326,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 7</p>
-          <!-- TODO for Figure 7. Budget: heading <= 40; body 7-10 lines
-               (420-600 characters).
-               Ideas: which park regions sit above or below the cities on spend
-               per trip; why the gap might exist (ask it as a question); remind
-               readers it is regional spending only, not the whole trip. -->
+
           <h3>Gold Coast outspends 5 major cities</h3>
           <p>Gold Coast averages $1,344 per overnight trip, above
               five of the six cities; only Darwin is higher at $1,877.
@@ -433,12 +347,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 8</p>
-          <!-- TODO for Figure 8. Budget: heading <= 40; body 7-10 lines
-               (420-600 characters).
-               Ideas: which states send and receive the most interstate trips;
-               invite the reader to hover an origin state; explain the grey
-               ribbons in plain words; end by asking how people make these
-               interstate trips (leads into flights in Section 04). -->
+
           <h3>NSW leads interstate overnight trips</h3>
           <p>Start by hovering to New South Wales on the left.
               It sends 11.9 million interstate trips and receives
@@ -480,11 +389,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 9</p>
-          <!-- TODO for Figure 9. Budget: heading <= 40; body 6-9 lines
-               (360-540 characters).
-               Ideas: the 12-year trend, the COVID drop and the recovery;
-               whether every route recovered the same way; tell readers they
-               can click a route in the legend to focus on it. -->
+
           <h3>Gold Coast to Sydney remains the busiest</h3>
           <p>Before COVID, traffic fluctuated, with growth on some
             routes. Passenger numbers collapsed in 2020, following an
@@ -504,12 +409,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 10</p>
-          <!-- TODO for Figure 10. Budget: heading <= 40; body 7-10 lines
-               (420-600 characters).
-               Ideas: read along each row to find an airport's busiest months;
-               contrast the northern and southern gateways; what these seasons
-               could mean for visiting nearby parks (weather, school holidays,
-               crowds). -->
+
           <h3>Cairns peaks in July; Hobart in January</h3>
           <p>Read each row: July peaks at Cairns, Townsville, Karratha
               and Mackay; October at Hamilton Island, Proserpine,
@@ -524,15 +424,11 @@
 
     <div class="strata strata--thin" aria-hidden="true"></div>
 
-    <!-- ====================================================================
-         SECTION 05 - THE BUSINESS BASE (sand background)
-         Who serves the visitors: tourism businesses by size.
-         ==================================================================== -->
+
     <section class="chapter chapter--sand" id="business" aria-labelledby="business-title">
       <header class="chapter-head">
         <p class="chapter-kicker">Section 5</p>
         <h2 class="chapter-title" id="business-title">How's business in park regions?</h2>
-        <!-- TODO: section intro. Who serves these visitors? -->
         <p>Visitors need places to stay, meals and other services.
             Tourism businesses help meet that demand. Compare the
             shares of companies in each size band across park regions
@@ -547,11 +443,7 @@
         </figure>
         <div class="story-text">
           <p class="fig-label">Visualisation 11</p>
-          <!-- TODO for Figure 11. Budget: heading <= 40; body 6-8 lines
-               (360-480 characters).
-               Ideas: compare the size bands of the two groups across the
-               middle labels; what the business mix might mean for local
-               economies that depend on park visitors. -->
+ 
           <h3>Higher employer share in park regions</h3>
           <p>Compare the non-employing and small-business bars.
               Businesses without staff account for 44.2% in park regions,
@@ -572,10 +464,7 @@
     <section class="closing" id="conclusion" aria-labelledby="conclusion-title">
       <div class="closing-inner">
         <h2 class="chapter-title" id="conclusion-title">Conclusion</h2>
-        <!-- TODO: the conclusion. Budget 6-10 lines (360-600 characters).
-             Answer the topic's questions directly: visitor numbers, parks
-             compared, seasons compared, long-term trends, and how outdoor
-             tourism has changed. Then be honest about the data's limits. -->
+
         <p>North Coast NSW was 1st in regional overnight trips in 2024.
           Gateway peaks vary: Cairns in July, Hobart in January.
           Regional growth was mixed, with 5 rising and 5
@@ -602,8 +491,7 @@
     <div class="footer-inner">
       <div>
         <h2 class="footer-title">Data sources</h2>
-        <!-- TODO: turn each source name into a link to where you downloaded
-             it, e.g. <a href="https://...">CAPAD 2024</a>. -->
+
         <div class="sources">
           <p>Australian Topographic Map (D3-Maps)<br>
           <a href="https://github.com/techslides/D3-Maps/blob/master/data/world/country/Australia.topo.json">https://github.com/techslides/D3-Maps/blob/master/data/world/country/Australia.topo.json</a></p>
