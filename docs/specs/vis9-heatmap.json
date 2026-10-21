@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Cairns peaks in July, while Tasmania's and other Queensland's gateways peak in January",
+    "text": "Cairns peaks in July, while Sunshine Coast peaks in January",
     "subtitle": [
       "Each cell shows a month's share of 2024 domestic and regional passenger movements.",
       "Shares reveal seasonal timing across airports of different sizes."
