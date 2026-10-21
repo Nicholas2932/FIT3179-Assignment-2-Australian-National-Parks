@@ -1,10 +1,10 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Cape York Peninsula national parks reached 5th place in 2013, from 8th place in 2008.",
+    "text": "Cape York Peninsula national parks rose to 5th in 2013, from 8th in 2008.",
     "subtitle": [
       "Queensland protected area categories ranked by number of protected areas, 2008 to 2024.",
-      "Nature refuge has consistently the most number of protected areas throughout 2008 to 2024, with national parks* consistently 2nd.",
+      "Nature refuges has the largest number of protected areas from 2008 to 2024, with national parks* consistently 2nd.",
       "* excludes Aboriginal land, Cape York, scientific and recovery national parks.",
       "Gaps mark years when a category did not exist."
     ],

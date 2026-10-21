@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "usermeta": {
-    "title": "Government and private governance have the highest counts per cell",
-    "subtitle": "Distinct terrestrial protected areas per 200x200km cell, by governance category. All panels share one count scale. Grey means no recorded locations.",
+    "title": "Government and privately governed areas have the highest counts per cell",
+    "subtitle": "Distinct terrestrial protected areas per 200 x 200km cell, by governance category. All panels share one count scale. Grey means no recorded locations.",
     "legendTitle": "Distinct protected areas per cell",
     "governanceNames": {
       "C": "Community",

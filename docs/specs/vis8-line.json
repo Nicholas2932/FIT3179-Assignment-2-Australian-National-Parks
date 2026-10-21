@@ -1,10 +1,10 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Gold Coast to Sydney remains the busiest of the five national park region air routes",
+    "text": "Gold Coast to Sydney remains the busiest of the 5 air routes serving national park regions",
     "subtitle": [
       "Monthly revenue passengers, both directions combined, from July 2014 to June 2026.",
-      "Top five routes by 2024 traffic; gap = unreleased data, zero = no flights."
+      "Top 5 routes by 2024 traffic; gap = unreleased data, zero = no flights."
     ],
     "anchor": "start",
     "offset": 14
@@ -105,7 +105,7 @@
               "value": 0
             },
             "text": {
-              "value": "COVID-19 Disruption"
+              "value": "COVID-19 disruption"
             },
             "tooltip": {
               "value": null

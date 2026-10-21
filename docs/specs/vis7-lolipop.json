@@ -1,11 +1,11 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Only Gold Coast exceeded five of the six major cities in spending per trip",
+    "text": "Only the Gold Coast exceeded five of the six major cities in spending per trip",
     "subtitle": [
       "Average regional spend per domestic overnight trip, year ending December 2024.",
-      "The same ten national-park regions compared with six major cities.",
-      "Note: Regional spending only, and not total trip costs or spending inside parks."
+      "10 national-park regions compared with 6 capital cities.",
+      "Note: regional spending only, and not total trip costs or spending inside parks."
     ],
     "anchor": "start",
     "offset": 14
