@@ -13,7 +13,7 @@
     "right": 24
   },
   "title": {
-    "text": "National parks varies across regions from 3.4% in WA to 45.23% in the ACT",
+    "text": "National parks varies across regions from 3.4% in WA to 45.2% in the ACT",
     "subtitle": [
       "Share of each mapped state or territory's land designated as a national park in 2024.",
       "Marine areas excluded; Tasmania has the highest share among states, at 21.8%."
@@ -210,7 +210,7 @@
           },
           {
             "field": "protected_area_ha",
-            "title": "Protected (ha)",
+            "title": "National park (ha)",
             "format": ",.0f"
           },
           {

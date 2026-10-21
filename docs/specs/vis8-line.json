@@ -58,11 +58,11 @@
       },
       "transform": [
         {
-          "calculate": "datetime(2020, 3, 1)",
+          "calculate": "datetime(2020, 2, 1)",
           "as": "band_start"
         },
         {
-          "calculate": "datetime(2020, 11, 1)",
+          "calculate": "datetime(2021, 2, 1)",
           "as": "band_end"
         }
       ],
